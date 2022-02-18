@@ -5,7 +5,7 @@ util.ensure_bin ghcup
 util.ensure_bin stack
 
 command -v haskell >/dev/null 2>&1 || {
-	util.log_info "Installing haskell"
+	print.info "Installing haskell"
 
 	mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/ghcup"
 	ln -s "${XDG_DATA_HOME:-$HOME/.local/share}"/{,ghcup/.}ghcup

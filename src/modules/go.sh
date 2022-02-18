@@ -4,7 +4,7 @@ util.ensure_bin go
 
 # todo: remove prompt
 hash g &>/dev/null || {
-	util.log_info "Installing g"
+	print.info "Installing g"
 	util.req https://git.io/g-install | sh -s
 }
 

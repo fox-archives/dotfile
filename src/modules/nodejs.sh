@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 
 if ! command -v n &>/dev/null; then
-	util.log_info "Installing n"
+	print.info "Installing n"
 	util.req https://raw.githubusercontent.com/mklement0/n-install/stable/bin/n-install | bash
 fi
 
