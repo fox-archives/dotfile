@@ -1,5 +1,7 @@
 # Getting Started
 
+**_NOTE_**: DO NOT USE _YET_
+
 ## Prerequisites
 
 - Decent familiarity with Bash scripting
