@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-DOTMGR_ROOT="$HOME/.dots/bootstrap/dotmgr"
+DOTMGR_ROOT=${0%/*}
+DOTMGR_ROOT=${DOTMGR_ROOT%/*}
 
-if ((EUID == 0)); then
-	source "$DOTMGR_ROOT/src/bin/dotmgr-root.sh"
-else
-	source "$DOTMGR_ROOT/src/bin/dotmgr.sh"
-fi
-
+source "$DOTMGR_ROOT/src/bin/dotmgr.sh"
 main.dotmgr "$@"

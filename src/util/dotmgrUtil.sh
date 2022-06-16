@@ -1,54 +1,6 @@
 # shellcheck shell=bash
 
-util.req() {
-	curl --proto '=https' --tlsv1.2 -sSLf "$@"
-}
-
-util.run() {
-	core.print_info "Executing '$*'"
-	if "$@"; then
-		return $?
-	else
-		return $?
-	fi
-}
-
-util.ensure() {
-	if "$@"; then :; else
-		core.print_die "'$*' failed (code $?)"
-	fi
-}
-
-util.ensure_bin() {
-	if ! command -v "$1" &>/dev/null; then
-		core.print_die "Command '$1' does not exist"
-	fi
-}
-
-util.is_cmd() {
-	if command -v "$1" &>/dev/null; then
-		return $?
-	else
-		return $?
-	fi
-}
-
-util.clone() {
-	local repo="$1"
-	local dir="$2"
-
-	if [ ! -d "$dir" ]; then
-		core.print_info "Cloning '$repo' to $dir"
-		git clone "$repo" "$dir"
-	fi
-}
-
-util.clone_in_dots() {
-	local repo="$1"
-	util.clone "$repo" ~/.dots/.repos/"${repo##*/}"
-}
-
-util.ensure_profile_read() {
+dotmgrUtil.ensure_profile_read() {
 	local has_found_profile='no'
 	for profile_file in  "$DOTMGR_ROOT/src/profiles"/?*.sh; do
 		source "$profile_file"
@@ -66,7 +18,7 @@ util.ensure_profile_read() {
 	fi
 }
 
-util.prereq() {
+dotmgrUtil.prereq() {
 	if [ -z "$XDG_CONFIG_HOME" ]; then
 		# shellcheck disable=SC2016
 		core.print_die '$XDG_CONFIG_HOME is empty. Did you source profile-pre-bootstrap.sh?'
@@ -83,7 +35,7 @@ util.prereq() {
 	fi
 }
 
-util.show_help() {
+dotmgrUtil.show_help() {
 	cat <<-EOF
 		Usage:
 		  dotmgr [command]
