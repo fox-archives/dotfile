@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Edwin Kofler" /><link rel="canonical" href="https://hyperupcall.github.io/hyperupcall/guide/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Guide - dotfox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Guide";
+        var mkdocs_page_input_path = "guide.md";
+        var mkdocs_page_url = "/hyperupcall/guide/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> dotfox
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">`dotmgr`</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Guide</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#actions">Actions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hooks">Hooks</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#profiles">Profiles</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#extras">Extras</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../history/">History</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">dotfox</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Guide</li>
+    <li class="wy-breadcrumbs-aside">
+        <a href="https://github.com/hyperupcall/hyperupcall/edit/master/docs/guide.md"
+          class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="guide">Guide</h1>
+<h2 id="summary">Summary</h2>
+<p>You can customize the behavior of <code>dotmgr</code> in three ways</p>
+<ul>
+<li><a href="##Actions">Actions</a></li>
+<li><a href="##Hooks">Hooks</a></li>
+<li><a href="##Profiles">Profiles</a></li>
+</ul>
+<p>For each of those three ways, you can use other files or functions</p>
+<ul>
+<li><a href="##Extras">Extras</a></li>
+<li>
+<p><a href="##Util">Util</a></p>
+</li>
+<li>
+<p>TODO: mention <code>core.*</code></p>
+</li>
+</ul>
+<h2 id="actions">Actions</h2>
+<p>Actions are at the core of your dotfile management. They are essentially shell scripts, but <code>dotmgr</code> parses their documentation and ordering to create a TUI interface to select a particular script super easily</p>
+<h2 id="hooks">Hooks</h2>
+<p>Hooks are placed in the <code>hooks</code> subdirectory. The supported hooks are:</p>
+<ul>
+<li><code>actionPlumbingBefore.sh</code></li>
+<li><code>actionPlumbingAfter.sh</code></li>
+<li><code>actionBefore.sh</code></li>
+<li><code>actionAfter.sh</code></li>
+<li><code>bootstrapBefore.sh</code></li>
+<li><code>bootstrapAfter.sh</code></li>
+<li><code>doctorBefore.sh</code></li>
+<li><code>doctorAfter.sh</code></li>
+<li><code>updateBefore.sh</code></li>
+<li><code>updateAfter.sh</code></li>
+</ul>
+<p>The body of the hook must be within the <code>main()</code> function. <code>dotmgr</code> will source your <a href="##Utilities">utility</a> files before calling <code>main()</code>. Example:</p>
+<pre><code class="language-sh"># shellcheck shell=bash
+
+main() {
+    printf '%s\n' 'Hook called!'
+}
+</code></pre>
+<h2 id="profiles">Profiles</h2>
+<p>Profiles are used to detect and categorize the currently running system. For example, you might have "server", "desktop", and "laptop" profiles so you can easily deploy different dotfiles</p>
+<h2 id="extras">Extras</h2>
+<p>Create auxillary files under the <code>extras</code> subdirectory. For example, particular Perl script, or a JSON configuration file may live here</p>
+<h2 id="utilities">Utilities</h2>
+<p>Create utility and helper functions under the <code>util</code> subdirectory.</p>
+<p>Simply place your functions within a file with a <code>.sh</code> file ending.</p>
+<p>For example, the following can be put in a <code>util/dot.sh</code> file:</p>
+<pre><code class="language-sh"># shellcheck shell=bash
+
+dot.install_cmd() {
+    local cmd=&quot;$1&quot;
+    local pkg=&quot;$2&quot;
+
+    if iscmd &quot;$cmd&quot;; then
+        log &quot;Already installed $cmd&quot;
+    else
+        log &quot;Installing $cmd&quot;
+
+        if iscmd 'pacman'; then
+            run sudo pacman -S --noconfirm &quot;$pkg&quot;
+        elif iscmd 'apt-get'; then
+            run sudo apt-get -y install &quot;$pkg&quot;
+        elif iscmd 'dnf'; then
+            run sudo dnf -y install &quot;$pkg&quot;
+        elif iscmd 'zypper'; then
+            run sudo zypper -y install &quot;$pkg&quot;
+        elif iscmd 'eopkg'; then
+            run sudo eopkg -y install &quot;$pkg&quot;
+        elif iscmd 'brew'; then
+            run brew install &quot;$pkg&quot;
+        fi
+
+        if ! iscmd &quot;$cmd&quot;; then
+            die &quot;Automatic installation of $cmd failed&quot;
+        fi
+    fi
+}
+</code></pre>
+<p>Now, your function is callable by any of your hooks, actions, or profiles like so:</p>
+<pre><code class="language-sh">dot.install_cmd 'nvim' 'neovim'
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../getting-started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../history/" class="btn btn-neutral float-right" title="History">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Edwin Kofler</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/hyperupcall/hyperupcall" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../getting-started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../history/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
