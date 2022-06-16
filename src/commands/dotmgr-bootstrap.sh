@@ -9,9 +9,10 @@ dotmgr-bootstrap() {
 	_util.get_user_dotmgr_dir
 	local user_dotmgr_dir="$REPLY"
 
-	_helper.run_hook "$user_dotmgr_dir" 'bootstrapBefore'
+	_helper.source_utils "$user_dotmgr_dir" "$@"
+	_helper.run_hook "$user_dotmgr_dir" 'bootstrapBefore' "$@"
 
-	# Bootstraps are inherently bespoke, so code intentionally ommited here
+	# Bootstraps are inherently bespoke, so code is intentionally ommited here
 
-	_helper.run_hook "$user_dotmgr_dir" 'bootstrapAfter'
+	_helper.run_hook "$user_dotmgr_dir" 'bootstrapAfter' "$@"
 }

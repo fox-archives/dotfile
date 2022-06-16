@@ -13,6 +13,8 @@ For each of those three ways, you can use other files or functions
 - [Extras](##Extras)
 - [Util](##Util)
 
+- TODO: mention `core.*`
+
 ## Actions
 
 Actions are at the core of your dotfile management. They are essentially shell scripts, but `dotmgr` parses their documentation and ordering to create a TUI interface to select a particular script super easily

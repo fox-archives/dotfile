@@ -1,21 +1,41 @@
 # shellcheck shell=bash
 
-_util.ensure_profile_read() {
-	local has_found_profile='no'
-	for profile_file in  "$DOTMGR_ROOT/src/profiles"/?*.sh; do
-		source "$profile_file"
-		local profile_name="${profile_file##*/}"; profile_name=${profile_name%.sh}
+_util.debug() {
+	local msg="$1"
 
-		if "$profile_name".check; then
-			"$profile_name".vars
+	if [[ -v DEBUG ]]; then
+		printf '%s\n' "DEBUG: $msg"
+	fi
+}
+
+_util.get_user_profile() {
+	unset -v REPLY; REPLY=
+	local user_dotmgr_dir="$1"
+
+	# shellcheck disable=SC1007
+	local arg= flag_no_exit='no'
+	for arg; do case $arg in
+		--no-exit) flag_no_exit='yes'
+	esac done; unset -v arg
+
+	# shellcheck disable=SC1007
+	local profile_name= has_found_profile='no'
+	for profile_file in  "$user_dotmgr_dir/profiles"/?*.sh; do
+		source "$profile_file"
+		profile_name=${profile_file##*/}; profile_name=${profile_name#*-}; profile_name=${profile_name%.sh}
+
+		if profile.check; then
+			profile.vars
 			has_found_profile='yes'
 			break
 		fi
 	done
 
-	if [ "$has_found_profile" = 'no' ]; then
+	if [[ $has_found_profile == 'no' && $flag_no_exit == 'no' ]]; then
 		core.print_die 'No matching profile could be found'
 	fi
+
+	REPLY="$profile_name"
 }
 
 _util.get_user_dotmgr_dir() {

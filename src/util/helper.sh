@@ -1,12 +1,26 @@
 # shellcheck shell=bash
 
+_helper.source_utils() {
+	local user_dotmgr_dir="$1"
+	if ! shift; then core.print_error 'Failed to shift'; fi
+
+	local f=
+	for f in "$user_dotmgr_dir/util"/*.sh; do
+		source "$f"
+	done; unset -v f
+}
+
 _helper.run_hook() {
 	local user_dotmgr_dir="$1"
 	local hook_name="$2"
 
 	local hook_file="$user_dotmgr_dir/hooks/$hook_name.sh"
 	if [ -f "$hook_file" ]; then
+		_util.debug "Found hook: $hook_file"
 		source "$hook_file"
+		main "$@"
+	else
+		_util.debug "Failed to find hook: $hook_file"
 	fi
 }
 
