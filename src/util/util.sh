@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-dotmgrUtil.ensure_profile_read() {
+_util.ensure_profile_read() {
 	local has_found_profile='no'
 	for profile_file in  "$DOTMGR_ROOT/src/profiles"/?*.sh; do
 		source "$profile_file"
@@ -18,7 +18,34 @@ dotmgrUtil.ensure_profile_read() {
 	fi
 }
 
-dotmgrUtil.prereq() {
+_util.get_user_dotmgr_dir() {
+	unset -v REPLY; REPLY=
+
+	# shellcheck disable=SC1007
+	local arg= flag_no_exit='no'
+	for arg; do case $arg in
+		--no-exit) flag_no_exit='yes'
+	esac done; unset -v arg
+
+	if [ -f "$DOTMGR_ROOT/.dotmgr_dir" ]; then
+		local dir=
+		dir=$(<"$DOTMGR_ROOT/.dotmgr_dir")
+		if [[ $dir == '~'* ]]; then
+			dir="${HOME}${dir:1}"
+		fi
+		REPLY=$dir
+	elif [ -f "$HOME/.dotfiles/dotmgr" ]; then
+		REPLY="$HOME/.dotfiles/dotmgr"
+	elif [ -f "$HOME/.dots/dotmgr" ]; then
+		REPLY="$HOME/.dots/dotmgr"
+	else
+		if [ "$flag_no_exit" = 'no' ]; then
+			core.print_die "Failed to find your dotmgr directory"
+		fi
+	fi
+}
+
+_util.prereq() {
 	if [ -z "$XDG_CONFIG_HOME" ]; then
 		# shellcheck disable=SC2016
 		core.print_die '$XDG_CONFIG_HOME is empty. Did you source profile-pre-bootstrap.sh?'
@@ -35,7 +62,7 @@ dotmgrUtil.prereq() {
 	fi
 }
 
-dotmgrUtil.show_help() {
+_util.show_help() {
 	cat <<-EOF
 		Usage:
 		  dotmgr [command]

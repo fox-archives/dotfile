@@ -2,12 +2,12 @@
 
 main.dotmgr() {
 	source "$DOTMGR_ROOT/src/util/source.sh"
-	dotmgrUtil.prereq
+	_util.prereq
 
 	local arg=
 	for arg; do case $arg in
 	-h|--help)
-		dotmgrUtil.show_help
+		_util.show_help
 		exit
 		;;
 	esac done; unset -v arg
@@ -20,7 +20,7 @@ main.dotmgr() {
 		source "$DOTMGR_ROOT/src/commands/dotmgr-$subcommand.sh"
 		dotmgr-"$subcommand" "$@"
 	else
-		dotmgrUtil.show_help
+		_util.show_help
 		core.print_error 'No matching subcommand found'
 		exit 1
 	fi

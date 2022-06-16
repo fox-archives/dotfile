@@ -153,6 +153,7 @@ source ~/.bootstrap/bootstrap-out.sh
 dotmgr bootstrap
 EOF
 _EOF
+	run chmod +x "$dotfileDir/bootstrap.sh"
 }
 
 main "$@"

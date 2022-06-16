@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-DOTMGR_ROOT=${0%/*}
+if command -v greadlink &>/dev/null; then
+	DOTMGR_ROOT=$(greadlink -f "$0")
+else
+	DOTMGR_ROOT=$(readlink -f "$0")
+fi
+DOTMGR_ROOT=${DOTMGR_ROOT%/*}
 DOTMGR_ROOT=${DOTMGR_ROOT%/*}
 
 source "$DOTMGR_ROOT/src/bin/dotmgr.sh"
