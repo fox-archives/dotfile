@@ -129,6 +129,7 @@ _helper.run_actions() {
 			"$EDITOR" "$actions_dir/${files_list[$selected]}.sh"
 			;;
 		$'\n'|$'\x0d')
+			core.trap_remove _tty.fullscreen_deinit_and_exit 'EXIT'
 			_tty.fullscreen_deinit
 			source "$actions_dir/${files_list[$selected]}.sh"
 			if ! main "$@"; then
