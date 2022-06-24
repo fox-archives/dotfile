@@ -13,9 +13,6 @@ For each of those three ways, you can use other files or functions
 - [Extras](##Extras)
 - [Util](##Util)
 
-- TODO: mention `core.*`
-- TODO: `DOTMGR_DIR`
-
 ## Actions
 
 Actions are at the core of your dotfile management. They are essentially shell scripts, but `dotmgr` parses their documentation and ordering to create a TUI interface to select a particular script super easily
@@ -47,11 +44,13 @@ main() {
 
 ## Profiles
 
-Profiles are used to detect and categorize the currently running system. For example, you might have "server", "desktop", and "laptop" profiles so you can easily deploy different dotfiles
+Profiles are used to detect and categorize the currently running system. For example, you might have "server", "desktop", and "laptop" profiles so you can easily deploy different dotfiles.
+
+Profiles are sourced in anti-numerical order. After each source, `main.check` is ran - if it returns a successful exit code, then the name of the file is used for the "profile" value (without the the `^.*?-` and `\.sh$`)
 
 ## Extras
 
-Create auxillary files under the `extras` subdirectory. For example, particular Perl script, or a JSON configuration file may live here
+Create auxillary files under the `extras` subdirectory. For example, a particular Perl script, or a JSON configuration file may live here. This isn't used by dotmgr, but it's convention
 
 ## Utilities
 

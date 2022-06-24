@@ -1,14 +1,18 @@
 # Tips
 
-## Writing Scripts
-
 1. Do not create functions starting with `_`
 
 These are reserved by use by dotmgr itself (your scripts are `source`'d and name conflicts must be prevented)
 
-## Troubleshooting
+2. `DOTMGR_DIR` override
 
-1. `Failed to find your dotmgr directory`
+Set this environment variable to set the location of the dotmgr content directory. This is done in this very repository so you can use the example
+
+3. Use `core.*` functions
+
+My `bash-core` library is vendored directly into this project, so use any functions from there to make script writing a bit more fun!
+
+4. Error: `Failed to find your dotmgr directory`
 
 This means dotmgr was not able to deduce your dotmgr _content directory_. This is the directory that holds your actions, hooks, profiles, and other scripts.
 
