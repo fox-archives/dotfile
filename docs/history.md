@@ -1,6 +1,6 @@
 # History
 
-My original dotfile manager was at [hyperupcall/dots-bootstrap](https://github.com/hyperupcall/dots-bootstrap), but I moved it into [hyperupcall/dots](https://github.com/dots) to make maintenance easier
+My original dotfile manager lived at [hyperupcall/dots-bootstrap](https://github.com/hyperupcall/dots-bootstrap), but I moved it into [hyperupcall/dots](https://github.com/dots) to make maintenance easier
 
 Sometime thereafter, I moved tools related to dotfile management (specifically [hyperupcall/dotshellextract](https://github.com/hyperupcall/dotshellextract) and [dotshellgen](https://github.com/hyperupcall/dotshellgen)) to `hyperupcall/dots`
 

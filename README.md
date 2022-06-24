@@ -1,6 +1,6 @@
 # dotmgr
 
-dotmgr is my dotfile manager
+A dotfile deployment framework
 
 ## Preview (`v1.0.0`)
 

@@ -1,15 +1,13 @@
-# `dotmgr`
+# dotmgr
 
-A simple dotfile framework
+A dotfile deployment framework
 
-STATUS: BETA
+## Contents
 
-## Pages
+New users, see [Getting Started](docs/getting-started.md)
 
-For creating a dotfiles repository with `dotmgr` or integrating `dotmgr` into your own dotfile repository, see [Getting Started](docs/getting-started.md)
+Once acclimated, see [Guide](docs/guide.md). This page is also a reference
 
-To see a short guide and reference of how to fully use `dotmgr`, see [Guide](docs/guide.md)
+For tips, see [Tips](docs/tips.md)
 
-For troubleshooting, see [Troubleshooting](docs/troubleshooting.md)
-
-To see the history of this project, see [History](docs/history.md)
+For project history, see [History](docs/history.md)
