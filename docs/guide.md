@@ -4,18 +4,22 @@
 
 You can customize the behavior of `dotmgr` in three ways
 
-- [Actions](##Actions)
-- [Hooks](##Hooks)
-- [Profiles](##Profiles)
+- [Actions](#actions)
+- [Hooks](#hooks)
+- [Profiles](#profiles)
 
 For each of those three ways, you can use other files or functions
 
-- [Extras](##Extras)
-- [Util](##Util)
+- [Extras](#extras)
+- [Utilities](#utilities)
 
 ## Actions
 
 Actions are at the core of your dotfile management. They are essentially shell scripts, but `dotmgr` parses their documentation and ordering to create a TUI interface to select a particular script super easily
+
+The initializer you ran in [Getting Started](./getting-started.md) should have set you up with some runnable actions.
+
+There are also "plumbing" and "sudo" variants of actions. Use plumbing if the action is some-what more lower-level, and you still want to be able to select from it Just In Case. Use "sudo" to run an action as sudo. This isn't implemented yet. Later, there will be a simple API to call plumbing scripts from non-plumbing scripts.
 
 ## Hooks
 
