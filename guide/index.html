@@ -103,17 +103,19 @@
 <h2 id="summary">Summary</h2>
 <p>You can customize the behavior of <code>dotmgr</code> in three ways</p>
 <ul>
-<li><a href="##Actions">Actions</a></li>
-<li><a href="##Hooks">Hooks</a></li>
-<li><a href="##Profiles">Profiles</a></li>
+<li><a href="#actions">Actions</a></li>
+<li><a href="#hooks">Hooks</a></li>
+<li><a href="#profiles">Profiles</a></li>
 </ul>
 <p>For each of those three ways, you can use other files or functions</p>
 <ul>
-<li><a href="##Extras">Extras</a></li>
-<li><a href="##Util">Util</a></li>
+<li><a href="#extras">Extras</a></li>
+<li><a href="#utilities">Utilities</a></li>
 </ul>
 <h2 id="actions">Actions</h2>
 <p>Actions are at the core of your dotfile management. They are essentially shell scripts, but <code>dotmgr</code> parses their documentation and ordering to create a TUI interface to select a particular script super easily</p>
+<p>The initializer you ran in <a href="../getting-started/">Getting Started</a> should have set you up with some runnable actions.</p>
+<p>There are also "plumbing" and "sudo" variants of actions. Use plumbing if the action is some-what more lower-level, and you still want to be able to select from it Just In Case. Use "sudo" to run an action as sudo. This isn't implemented yet. Later, there will be a simple API to call plumbing scripts from non-plumbing scripts.</p>
 <h2 id="hooks">Hooks</h2>
 <p>Hooks are placed in the <code>hooks</code> subdirectory. The supported hooks are:</p>
 <ul>
