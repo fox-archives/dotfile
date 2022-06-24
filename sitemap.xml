@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://hyperupcall.github.io/dotmgr/</loc>
+         <loc>https://hyperupcall.github.io/dotmgr/index.html</loc>
          <lastmod>2022-06-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://hyperupcall.github.io/dotmgr/getting-started/</loc>
+         <loc>https://hyperupcall.github.io/dotmgr/getting-started.html</loc>
          <lastmod>2022-06-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://hyperupcall.github.io/dotmgr/guide/</loc>
+         <loc>https://hyperupcall.github.io/dotmgr/guide.html</loc>
          <lastmod>2022-06-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://hyperupcall.github.io/dotmgr/history/</loc>
+         <loc>https://hyperupcall.github.io/dotmgr/history.html</loc>
          <lastmod>2022-06-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://hyperupcall.github.io/dotmgr/tips/</loc>
+         <loc>https://hyperupcall.github.io/dotmgr/tips.html</loc>
          <lastmod>2022-06-24</lastmod>
          <changefreq>daily</changefreq>
     </url>
