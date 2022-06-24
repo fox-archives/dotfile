@@ -48,7 +48,7 @@ main() {
 	run touch "$dotfileDir/bootstrap.sh"
 
 	# Write sample actions
-	cat > "$dotfileDir/actions/10-dotmgr-say-hello" <<"EOF"
+	cat > "$dotfileDir/dotmgr/actions/10-dotmgr-say-hello.sh" <<"EOF"
 # shellcheck shell=bash
 
 # Name:
@@ -62,7 +62,7 @@ main() {
 	printf '%s\n' 'Hello!'
 }
 EOF
-	cat > "$dotfileDir/actions/11-dotmgr-say-woof" <<"EOF"
+	cat > "$dotfileDir/dotmgr/actions/11-dotmgr-say-woof.sh" <<"EOF"
 # shellcheck shell=bash
 
 # Name:
@@ -76,7 +76,7 @@ main() {
 	printf '%s\n' 'WOOF ^w^'
 }
 EOF
-	cat > "$dotfileDir/actions/20-dotmgr-say-meow" <<"EOF"
+	cat > "$dotfileDir/dotmgr/actions/20-dotmgr-say-meow.sh" <<"EOF"
 # shellcheck shell=bash
 
 # Name:
@@ -91,7 +91,7 @@ main() {
 EOF
 
 	# Write sample hooks
-	cat >> "$dotfileDir/hooks/bootstrapAfter.sh" <<"EOF"
+	cat >> "$dotfileDir/dotmgr/hooks/bootstrapAfter.sh" <<"EOF"
 # shellcheck shell=bash
 
 main() {
@@ -105,7 +105,7 @@ main() {
 EOF
 
 	# Write sample profiles
-	cat >> "$dotfileDir/profiles/0-default.sh" <<"EOF"
+	cat >> "$dotfileDir/dotmgr/profiles/0-default.sh" <<"EOF"
 # shellcheck shell=bash
 
 main.check() {
@@ -114,7 +114,7 @@ main.check() {
 	return 1
 }
 EOF
-	cat >> "$dotfileDir/profiles/1-desktop.sh" <<"EOF"
+	cat >> "$dotfileDir/dotmgr/profiles/1-desktop.sh" <<"EOF"
 desktop.check() {
 	# If the current system is a Desktop (3) system, returns true; otherwise, returns false
 	if [ "$(</sys/class/dmi/id/chassis_type)" = '3' ]; then :; else
@@ -128,7 +128,7 @@ desktop.vars() {
 EOF
 
 	# Write sample bootstrap
-	cat >> "$dotfileDir/bootstrap.sh" <<"_EOF"
+	cat >> "$dotfileDir/dotmgr/bootstrap.sh" <<"_EOF"
 #!/usr/bin/env bash
 set -eo pipefail
 
@@ -137,7 +137,7 @@ if [ "${BASH_SOURCE[0]}" != "$0" ]; then
 	return 1
 fi
 
-git clone https://github.com/hyperupcall/dotmgr ~/.bootstrap/dotmgr
+git clone 'https://github.com/hyperupcall/dotmgr' ~/.bootstrap/dotmgr
 
 # When this file is sourced, we want `dotmgr` to be in the `PATH`. This is a temporary thing, that
 # only affects a single shell. Make sure you make it a perminant thing when `dotmgr bootstrap` is
@@ -153,7 +153,7 @@ source ~/.bootstrap/bootstrap-out.sh
 dotmgr bootstrap
 EOF
 _EOF
-	run chmod +x "$dotfileDir/bootstrap.sh"
+	run chmod +x "$dotfileDir/dotmgr/bootstrap.sh"
 }
 
 main "$@"

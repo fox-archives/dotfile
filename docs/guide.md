@@ -14,6 +14,7 @@ For each of those three ways, you can use other files or functions
 - [Util](##Util)
 
 - TODO: mention `core.*`
+- TODO: `DOTMGR_DIR`
 
 ## Actions
 

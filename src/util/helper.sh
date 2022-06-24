@@ -28,6 +28,9 @@ _helper.run_actions() {
 	local actions_dir="$1"
 	local action="$2"
 
+	_util.get_file_list "$actions_dir"
+	local -a files_list=("${REPLY[@]}")
+
 	if [ -n "$action" ]; then
 		if [ -f "$actions_dir/$action.sh" ]; then
 			source "$actions_dir/$action.sh"
@@ -49,7 +52,7 @@ _helper.run_actions() {
 
 	local -a actions=() descriptions=()
 	local file=
-	for file in "${files[@]}"; do
+	for file in "${files_list[@]}"; do
 		if [ -z "$file" ]; then
 			actions+=('')
 			descriptions+=('')
@@ -105,7 +108,7 @@ _helper.run_actions() {
 
 		case $key in
 		j)
-			if ((selected < ${#files[@]} - 1)); then
+			if ((selected < ${#files_list[@]} - 1)); then
 				if [ -z "${actions[$selected+1]}" ]; then
 					selected=$((selected+2))
 				else
@@ -123,11 +126,11 @@ _helper.run_actions() {
 			fi
 			;;
 		e)
-			"$EDITOR" "$actions_dir/${files[$selected]}.sh"
+			"$EDITOR" "$actions_dir/${files_list[$selected]}.sh"
 			;;
 		$'\n'|$'\x0d')
 			_tty.fullscreen_deinit
-			source "$actions_dir/${files[$selected]}.sh"
+			source "$actions_dir/${files_list[$selected]}.sh"
 			if ! action; then
 				core.print_die "Failed to execute action"
 			fi
@@ -137,7 +140,7 @@ _helper.run_actions() {
 			# shellcheck disable=SC1007
 			local -i i= adjustedi=-1
 			for ((i=0; i < key; ++i)); do
-				if [ -z "${files[$i]}" ]; then
+				if [ -z "${files_list[$i]}" ]; then
 					adjustedi=$((adjustedi+1))
 				fi
 

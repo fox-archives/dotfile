@@ -47,6 +47,11 @@ _util.get_user_dotmgr_dir() {
 		--no-exit) flag_no_exit='yes'
 	esac done; unset -v arg
 
+	if [[ -v DOTMGR_DIR ]]; then
+		REPLY="$DOTMGR_DIR"
+		return
+	fi
+
 	if [ -f "$DOTMGR_ROOT/.dotmgr_dir" ]; then
 		local dir=
 		dir=$(<"$DOTMGR_ROOT/.dotmgr_dir")
@@ -63,6 +68,25 @@ _util.get_user_dotmgr_dir() {
 			core.print_die "Failed to find your dotmgr directory"
 		fi
 	fi
+}
+
+_util.get_file_list() {
+	unset -v REPLY; declare -g REPLY=()
+	local actions_dir="$1"
+
+	# shellcheck disable=SC1007
+	local file= previous_section_number=
+	for file in "$actions_dir"/{0..9}*.sh; do
+		local file_name="${file##*/}"
+		local section_number="${file_name::1}"
+
+		if [[ -n "$previous_section_number" && "$section_number" != "$previous_section_number" ]]; then
+			REPLY+=('')
+		fi
+
+		REPLY+=("${file_name%.sh}")
+		previous_section_number=$section_number
+	done; unset -v file
 }
 
 _util.prereq() {
