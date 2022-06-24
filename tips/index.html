@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Edwin Kofler" /><link rel="canonical" href="https://hyperupcall.github.io/dotmgr/troubleshooting/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Edwin Kofler" /><link rel="canonical" href="https://hyperupcall.github.io/dotmgr/tips/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Troubleshooting - dotmgr</title>
+    <title>Tips - dotmgr</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Troubleshooting";
-        var mkdocs_page_input_path = "troubleshooting.md";
-        var mkdocs_page_url = "/dotmgr/troubleshooting/";
+        var mkdocs_page_name = "Tips";
+        var mkdocs_page_input_path = "tips.md";
+        var mkdocs_page_url = "/dotmgr/tips/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -41,7 +41,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">`dotmgr`</a>
+                <li class="toctree-l1"><a class="reference internal" href="..">dotmgr</a>
                 </li>
               </ul>
               <ul>
@@ -57,9 +57,11 @@
                 </li>
               </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">Troubleshooting</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Tips</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#failed-to-find-your-dotmgr-directory">Failed to find your dotmgr directory</a>
+    <li class="toctree-l2"><a class="reference internal" href="#writing-scripts">Writing Scripts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
     </li>
     </ul>
                 </li>
@@ -77,9 +79,9 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Troubleshooting</li>
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Tips</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/hyperupcall/dotmgr/edit/master/docs/troubleshooting.md"
+        <a href="https://github.com/hyperupcall/dotmgr/edit/master/docs/tips.md"
           class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
@@ -89,8 +91,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="troubleshooting">Troubleshooting</h1>
-<h2 id="failed-to-find-your-dotmgr-directory"><code>Failed to find your dotmgr directory</code></h2>
+                <h1 id="tips">Tips</h1>
+<h2 id="writing-scripts">Writing Scripts</h2>
+<ol>
+<li>Do not create functions starting with <code>_</code></li>
+</ol>
+<p>These are reserved by use by dotmgr itself (your scripts are <code>source</code>'d and name conflicts must be prevented)</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ol>
+<li><code>Failed to find your dotmgr directory</code></li>
+</ol>
+<p>This means dotmgr was not able to deduce your dotmgr <em>content directory</em>. This is the directory that holds your actions, hooks, profiles, and other scripts.</p>
+<p>By default, it will try to use <code>~/.dotfiles/dotmgr</code> and <code>~/.dots/dotmgr</code>. If neither exist, it will error. Avoid the error by writing a <code>.dotmgr_dir</code> file with the content being the full path to your dotmgr content directory.</p>
+<p>For example, if you cloned this repository to <code>~/.dotmgr</code> and your dotmgr content directory is at <code>~/my-dotfiles/dotmgr</code>, then write the file <code>~/.dotmgr/dotmgr_dir</code> with the content <code>~/my-dotfiles/dotmgr</code></p>
               
             </div>
           </div><footer>

@@ -41,13 +41,15 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">`dotmgr`</a>
+                <li class="toctree-l1"><a class="reference internal" href="..">dotmgr</a>
                 </li>
               </ul>
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Getting Started</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#initialization">Initialization</a>
     </li>
@@ -63,7 +65,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                <li class="toctree-l1"><a class="reference internal" href="../tips/">Tips</a>
                 </li>
               </ul>
       </div>
@@ -92,24 +94,34 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="getting-started">Getting Started</h1>
-<p><strong><em>NOTE</em></strong>: DO NOT USE <em>YET</em></p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li>Decent familiarity with Bash scripting</li>
+<li>Familiarity with Bash scripting</li>
 <li>Familiarity with Git</li>
+<li><strong>Pre-existing usage of a dotfile synchronizer</strong></li>
 </ul>
+<p>The last one is <em>very important</em>. <code>dotmgr</code> is mostly a script manager and you need to already have a way to synchronize dotfiles, like <a href="https://github.com/twpayne/chezmoi">Chezmoi</a>, <a href="https://github.com/deadc0de6/dotdrop">dotdrop</a>, or <a href="https://github.com/thoughtbot/rcm">rcm</a>.</p>
+<h2 id="installation">Installation</h2>
+<p>There are two contexts in which dotmgr can be installed:</p>
+<ul>
+<li>When bootstrapping your dotfiles</li>
+<li>Initial installation (you're doing this right now)</li>
+</ul>
+<p>We recommend installing them to the same location. I'll use <code>~/.dotmgr</code> since it's simple and the initialization scripts in the next step use it by default. You can always change it later</p>
+<pre><code class="language-sh">git clone 'https://github.com/hyperupcall/dotmgr' ~/.dotmgr
+</code></pre>
+<p>You're going to have to add <code>~/.dotmgr/src/bin</code> to the path manually, in <code>~/.bashrc</code> or whatever. Just make sure that the file is already managed by a dotfile synchronizer like <a href="https://github.com/twpayne/chezmoi">Chezmoi</a> or your personal tool of choice</p>
+<p>I personally symlink the <code>dotmgr</code> executable to a <a href="https://github.com/hyperupcall/dots/blob/5066bd6b29586f90ed2dd2db550eeb22c2fc96e6/dotmgr/bootstrap.sh#L43">common bin directory</a> and <a href="https://github.com/hyperupcall/dots/blob/5066bd6b29586f90ed2dd2db550eeb22c2fc96e6/user/.config/shell/profile.sh#L27">add <em>that</em> to the PATH</a>. Since <code>profile.sh</code> is handled (it creates a symlink from <code>~/.profile</code>) by my personal dotfile synchronizer, <a href="https://github.com/hyperupcall/dotfox">dotfox</a>, everything just works</p>
 <h2 id="initialization">Initialization</h2>
-<p>There is an initialization script to automatically generate the directories that <code>dotmgr</code> uses</p>
+<p>You're almost ready to rock and roll! We provide an initialization script to automatically generate the directories that dotmgr requires:</p>
 <pre><code class="language-sh">https://raw.githubusercontent.com/hyperupcall/dotmgr/main/scripts/init.sh | bash
 </code></pre>
-<ul>
-<li>Do not create functions that start with <code>_</code>. These are reserved by use by <code>dotmgr</code> itself</li>
-</ul>
+<p>Simply follow the insturctions. Once ran, you're ready for <a href="docs/guide.md">Guide</a></p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="`dotmgr`"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href=".." class="btn btn-neutral float-left" title="dotmgr"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../guide/" class="btn btn-neutral float-right" title="Guide">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
