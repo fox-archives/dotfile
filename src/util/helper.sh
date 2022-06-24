@@ -37,7 +37,7 @@ _helper.run_actions() {
 			if ! shift; then
 				core.print_die 'Failed to shift'
 			fi
-			if ! action "$@"; then
+			if ! main "$@"; then
 				core.print_die "Failed to execute action"
 			fi
 		else
@@ -131,7 +131,7 @@ _helper.run_actions() {
 		$'\n'|$'\x0d')
 			_tty.fullscreen_deinit
 			source "$actions_dir/${files_list[$selected]}.sh"
-			if ! action; then
+			if ! main "$@"; then
 				core.print_die "Failed to execute action"
 			fi
 			exit
