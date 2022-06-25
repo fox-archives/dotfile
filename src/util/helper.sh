@@ -28,17 +28,15 @@ _helper.run_actions() {
 	local -a files_list=("${REPLY[@]}")
 
 	if [ -n "$action" ]; then
-		local action_file=
-		if [ -f "$actions_dir/$action.sh" ]; then
-			action_file="$actions_dir/$action.sh"
-		elif [ -f  "$actions_dir/$action" ]; then
-			action_file="$actions_dir/$action"
+		local -a action_files=("$actions_dir/"*"$action"*)
+		if (( ${#action_files[@]} == 0 )); then
+			core.print_die "Failed to find file matching '$action'"
 		else
-			core.print_die "Could not find action '$action'"
+			_util.source_and_run_main "${action_files[0]}" "$@"
+			exit
 		fi
 
-		_util.source_and_run_main "$action_file" "$@"
-		exit
+
 	fi
 
 	local left_str='                     |'

@@ -31,7 +31,7 @@ dotmgr.call() {
 
 	local -a files=("$dir/"*"$filename"*)
 	if (( ${#files[@]} == 0 )); then
-		core.print_error "Failed to find a plumbing file against name '$filename'"
+		core.print_error "Failed to find file matching '$filename'"
 	else
 		_util.source_and_run_main "${files[0]}" "$@"
 	fi
