@@ -1,13 +1,5 @@
 # shellcheck shell=bash
 
-_util.debug() {
-	local msg="$1"
-
-	if [[ -v DEBUG ]]; then
-		printf '%s\n' "DEBUG: $msg"
-	fi
-}
-
 _util.get_user_profile() {
 	unset -v REPLY; REPLY=
 	local user_dotmgr_dir="$1"
@@ -87,6 +79,19 @@ _util.get_file_list() {
 		REPLY+=("${file_name%.sh}")
 		previous_section_number=$section_number
 	done; unset -v file
+}
+
+_util.source_and_run_main() {
+	local file="$1"
+
+	if ! shift; then
+		core.panic 'Failed to shift'
+	fi
+
+	source "$file"
+	if main "$@"; then :; else
+		return $?
+	fi
 }
 
 _util.prereq() {

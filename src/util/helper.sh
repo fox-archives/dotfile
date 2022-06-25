@@ -16,11 +16,7 @@ _helper.run_hook() {
 
 	local hook_file="$user_dotmgr_dir/hooks/$hook_name.sh"
 	if [ -f "$hook_file" ]; then
-		_util.debug "Found hook: $hook_file"
-		source "$hook_file"
-		main "$@"
-	else
-		_util.debug "Failed to find hook: $hook_file"
+		_util.source_and_run_main "$hook_file" "$@"
 	fi
 }
 
@@ -32,17 +28,16 @@ _helper.run_actions() {
 	local -a files_list=("${REPLY[@]}")
 
 	if [ -n "$action" ]; then
+		local action_file=
 		if [ -f "$actions_dir/$action.sh" ]; then
-			source "$actions_dir/$action.sh"
-			if ! shift; then
-				core.print_die 'Failed to shift'
-			fi
-			if ! main "$@"; then
-				core.print_die "Failed to execute action"
-			fi
+			action_file="$actions_dir/$action.sh"
+		elif [ -f  "$actions_dir/$action" ]; then
+			action_file="$actions_dir/$action"
 		else
 			core.print_die "Could not find action '$action'"
 		fi
+
+		_util.source_and_run_main "$action_file" "$@"
 		exit
 	fi
 
@@ -131,10 +126,7 @@ _helper.run_actions() {
 		$'\n'|$'\x0d')
 			core.trap_remove _tty.fullscreen_deinit_and_exit 'EXIT'
 			_tty.fullscreen_deinit
-			source "$actions_dir/${files_list[$selected]}.sh"
-			if ! main "$@"; then
-				core.print_die "Failed to execute action"
-			fi
+			_util.source_and_run_main "$actions_dir/${files_list[$selected]}.sh"
 			exit
 			;;
 		1|2|3|4|5|6|7|8|9)
