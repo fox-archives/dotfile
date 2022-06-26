@@ -1,7 +1,5 @@
 # shellcheck shell=bash
 
-#
-
 dotmgr.get_profile() {
 	unset -v REPLY; REPLY=
 

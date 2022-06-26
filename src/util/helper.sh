@@ -35,8 +35,6 @@ _helper.run_actions() {
 			_util.source_and_run_main "${action_files[0]}" "$@"
 			exit
 		fi
-
-
 	fi
 
 	local left_str='                     |'
