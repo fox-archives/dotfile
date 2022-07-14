@@ -46,6 +46,8 @@ main() {
 }
 ```
 
+For `-sudo` action files (when passing `--sudo`), append `Sudo` to the name. For example, `updateAfter.sh` would become `updateAfterSudo.sh`
+
 ## Profiles
 
 Profiles are used to detect and categorize the currently running system. For example, you might have "server", "desktop", and "laptop" profiles so you can easily deploy different dotfiles.

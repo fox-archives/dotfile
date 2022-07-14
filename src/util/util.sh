@@ -99,23 +99,6 @@ _util.source_and_run_main() {
 	fi
 }
 
-_util.prereq() {
-	if [ -z "$XDG_CONFIG_HOME" ]; then
-		# shellcheck disable=SC2016
-		core.print_die '$XDG_CONFIG_HOME is empty. Did you source profile-pre-bootstrap.sh?'
-	fi
-
-	if [ -z "$XDG_DATA_HOME" ]; then
-		# shellcheck disable=SC2016
-		core.print_die '$XDG_DATA_HOME is empty. Did you source profile-pre-bootstrap.sh?'
-	fi
-
-	if [ -z "$XDG_STATE_HOME" ]; then
-		# shellcheck disable=SC2016
-		core.print_die '$XDG_STATE_HOME is empty. Did you source profile-pre-bootstrap.sh?'
-	fi
-}
-
 _util.show_help() {
 	cat <<-EOF
 		Usage:

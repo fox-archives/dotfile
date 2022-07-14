@@ -2,7 +2,6 @@
 
 main.dotmgr() {
 	source "$DOTMGR_ROOT/src/util/source.sh"
-	_util.prereq
 
 	local arg=
 	for arg; do case $arg in
