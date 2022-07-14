@@ -13,3 +13,7 @@ done; unset -v f
 for f in "$DOTMGR_ROOT"/vendor/bash-core/pkg/src/{public,util}/?*.sh; do
 	source "$f"
 done; unset -v f
+
+for f in "$DOTMGR_ROOT"/vendor/bash-term/pkg/src/{public,util}/?*.sh; do
+	source "$f"
+done; unset -v f

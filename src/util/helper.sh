@@ -68,7 +68,7 @@ _helper.run_actions() {
 			elif [ "$mode" = 'description' ]; then
 				if [ "${line:0:1}" != '#' ]; then
 					descriptions+=("$description")
-					mode='default'
+					mode='default-post'
 					continue
 				fi
 
@@ -84,6 +84,14 @@ _helper.run_actions() {
 				descriptionsi=$((descriptionsi++))
 			fi
 		done < "$actions_dir/$file.sh"; unset -v line
+
+		if [ "$mode" = 'default' ]; then
+			actions+=("$file")
+
+			term.italic 'Not Applicable'
+			local text="$REPLY"
+			descriptions+=("${description}${esc}${text}"$'\n')
+		fi
 	done; unset -v file
 
 	_tty.fullscreen_init
