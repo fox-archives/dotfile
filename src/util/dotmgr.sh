@@ -31,6 +31,17 @@ dotmgr.call() {
 	if (( ${#files[@]} == 0 )); then
 		core.print_error "Failed to find file matching '$filename'"
 	else
-		_util.source_and_run_main "${files[0]}" "$@"
+		core.print_info "Executing ${files[0]}"
+		FORCE_COLOR=3 _util.source_and_run_main "${files[0]}" "$@" \
+			4>&1 1> >(
+				while IFS= read -r line; do
+					printf "  %s\n" "$line" >&4
+				done; unset -v line
+			) \
+			5>&2 2> >(
+				while IFS= read -r line; do
+					printf "  %s\n" "$line" >&5
+				done; unset -v line
+			)
 	fi
 }
