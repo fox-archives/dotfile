@@ -46,17 +46,17 @@ main() {
 }
 ```
 
-For `-sudo` action files (when passing `--sudo`), append `Sudo` to the name. For example, `updateAfter.sh` would become `updateAfterSudo.sh`
+When calling an action while passing `--sudo`, slightly different files are called for the hooks. For example, `updateAfterSudo.sh` would be called instead of `updateAfter.sh`.
 
 ## Profiles
 
 Profiles are used to detect and categorize the currently running system. For example, you might have "server", "desktop", and "laptop" profiles so you can easily deploy different dotfiles.
 
-Profiles are sourced in anti-numerical order. After each source, `main.check` is ran - if it returns a successful exit code, then the name of the file is used for the "profile" value (without the the `^.*?-` and `\.sh$`)
+Profiles are sourced in anti-numerical order. After each source, `main.check` is ran - if it returns a successful exit code, then the normalized name of the file is used for the "profile" variable. "Normalize" means that a prefix of `^.*?-` and suffix of `\.sh$` are removed. So, `1-desktop.sh` becomes `desktop`.
 
 ## Extras
 
-Create auxillary files under the `extras` subdirectory. For example, a particular Perl script, or a JSON configuration file may live here. This isn't used by dotmgr, but it's convention
+Create auxillary files under the `extras` subdirectory. For example, a particular Perl script, or a JSON configuration file may live here. This isn't used by dotmgr directly, but it's a convention.
 
 ## Utilities
 
