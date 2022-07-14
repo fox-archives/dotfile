@@ -52,7 +52,7 @@ When calling an action while passing `--sudo`, slightly different files are call
 
 Profiles are used to detect and categorize the currently running system. For example, you might have "server", "desktop", and "laptop" profiles so you can easily deploy different dotfiles.
 
-Profiles are sourced in anti-numerical order. After each source, `main.check` is ran - if it returns a successful exit code, then the normalized name of the file is used for the "profile" variable. "Normalize" means that a prefix of `^.*?-` and suffix of `\.sh$` are removed. So, `1-desktop.sh` becomes `desktop`.
+Profiles are sourced in anti-numerical order. After each source, `main.check` is ran - if it returns a successful exit code, then the normalized name of the file is set to `REPLY` when calling `dotmgr.get_profile()`. "Normalize" means that a prefix of `^.*?-` and suffix of `\.sh$` are removed. So, `1-desktop.sh` becomes `desktop`.
 
 ## Extras
 
