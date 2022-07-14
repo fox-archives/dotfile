@@ -88,9 +88,14 @@ _util.source_and_run_main() {
 		core.panic 'Failed to shift'
 	fi
 
+	unset -f main
 	source "$file"
-	if main "$@"; then :; else
-		return $?
+	if declare -f main &>/dev/null; then
+		if main "$@"; then :; else
+			return $?
+		fi
+	else
+		core.print_fatal "File '$file' does not have a main() function"
 	fi
 }
 

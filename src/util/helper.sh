@@ -40,7 +40,6 @@ _helper.run_actions() {
 	local left_str='                     |'
 	local -i selected=0
 
-
 	local -a actions=() descriptions=()
 	local file=
 	for file in "${files_list[@]}"; do
@@ -117,7 +116,10 @@ _helper.run_actions() {
 			fi
 			;;
 		e)
+			core.trap_remove _tty.fullscreen_deinit_and_exit 'EXIT'
+			_tty.fullscreen_deinit
 			"$EDITOR" "$actions_dir/${files_list[$selected]}.sh"
+			_tty.fullscreen_init
 			;;
 		$'\n'|$'\x0d')
 			core.trap_remove _tty.fullscreen_deinit_and_exit 'EXIT'
