@@ -95,7 +95,7 @@ _util.source_and_run_main() {
 			return $?
 		fi
 	else
-		core.print_fatal "File '$file' does not have a main() function"
+		core.print_die "File '$file' does not have a main() function"
 	fi
 }
 

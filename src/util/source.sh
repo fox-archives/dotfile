@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-set -eo pipefail
+set -eETo pipefail
 shopt -s dotglob extglob globstar nullglob shift_verbose
 
 for f in "$DOTMGR_ROOT"/src/{helpers,util}/?*.sh; do
