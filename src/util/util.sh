@@ -104,7 +104,7 @@ _util.show_help() {
 		Usage:
 		  dotmgr [command]
 
-		Commands:
+		Core Commands:
 		  bootstrap
 		    Bootstrap operations that occur before dotfiles have been deployed
 
@@ -116,12 +116,13 @@ _util.show_help() {
 		    Perform a plumbing action. These are automatically called by 'action', but
 		    in case of issues, they can be called manually
 
+		Supplemental Commands:
 		  doctor
 		    Get information about the current system. Currently, it lists
 		    information about the current profile
 
 		  update
-		    Update dotmgr
+		    Updates dotmgr to the latest release
 
 		  test
 		    Search the dotfiles repository for Bats testing files. For each one,

@@ -7,6 +7,7 @@ for f in "$DOTMGR_ROOT"/src/{helpers,util}/?*.sh; do
 	if [ "${f##*/}" = "${BASH_SOURCE[1]##*/}" ]; then
 		continue
 	fi
+
 	source "$f"
 done; unset -v f
 
