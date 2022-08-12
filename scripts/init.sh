@@ -48,7 +48,19 @@ main() {
 	run touch "$dotfileDir/bootstrap.sh"
 
 	# Write sample actions
-	cat > "$dotfileDir/dotmgr/actions/10-dotmgr-say-hello.sh" <<"EOF"
+	cat >> "$dotfileDir/dotmgr/actions/10-bootstrap.sh" <<"EOF"
+# shellcheck shell=bash
+
+main() {
+	printf '%s\n' "Installing various packages and utilities"
+
+	# DEBIAN_FRONTEND=noninteractive sudo apt-get -y --no-install-recommends install \
+	# 	apt-transport-https clang
+
+	# NONINTERACTIVE=1 brew install autoenv
+}
+EOF
+	cat > "$dotfileDir/dotmgr/actions/11-dotmgr-say-hello.sh" <<"EOF"
 # shellcheck shell=bash
 
 # Name:
@@ -62,7 +74,7 @@ main() {
 	printf '%s\n' 'Hello!'
 }
 EOF
-	cat > "$dotfileDir/dotmgr/actions/11-dotmgr-say-woof.sh" <<"EOF"
+	cat > "$dotfileDir/dotmgr/actions/12-dotmgr-say-woof.sh" <<"EOF"
 # shellcheck shell=bash
 
 # Name:
@@ -87,20 +99,6 @@ EOF
 
 main() {
 	printf '%s\n' 'meow'
-}
-EOF
-
-	# Write sample hooks
-	cat >> "$dotfileDir/dotmgr/hooks/bootstrapAfter.sh" <<"EOF"
-# shellcheck shell=bash
-
-main() {
-	printf '%s\n' "Installing various packages and utilities"
-
-	# DEBIAN_FRONTEND=noninteractive sudo apt-get -y --no-install-recommends install \
-	# 	apt-transport-https clang
-
-	# NONINTERACTIVE=1 brew install autoenv
 }
 EOF
 

@@ -104,10 +104,7 @@ _util.show_help() {
 		Usage:
 		  dotmgr [command]
 
-		Core Commands:
-		  bootstrap
-		    Bootstrap operations that occur before dotfiles have been deployed
-
+		Commands:
 		  action [--sudo]
 		    Perform a particular action. If no action was given, show
 		    a selection screen for the different actions
@@ -116,7 +113,6 @@ _util.show_help() {
 		    Perform a plumbing action. These are automatically called by 'action', but
 		    in case of issues, they can be called manually
 
-		Supplemental Commands:
 		  doctor
 		    Get information about the current system. Currently, it lists
 		    information about the current profile
@@ -124,16 +120,11 @@ _util.show_help() {
 		  update
 		    Updates dotmgr to the latest release
 
-		  test
-		    Search the dotfiles repository for Bats testing files. For each one,
-			 change directory and execute Bats
-
 		Flags:
 		  --help
 		    Show help menu
 
 		Examples:
-		  dotmgr bootstrap
 		  dotmgr action
 	EOF
 }

@@ -4,14 +4,23 @@
 
 You can customize the behavior of `dotmgr` in three ways
 
-- [Actions](#actions)
-- [Hooks](#hooks)
-- [Profiles](#profiles)
+- [Guide](#guide)
+	- [Summary](#summary)
+	- [Actions](#actions)
+	- [Hooks](#hooks)
+	- [Profiles](#profiles)
+	- [Extras](#extras)
+	- [Utilities](#utilities)
 
 For each of those three ways, you can use other files or functions
 
-- [Extras](#extras)
-- [Utilities](#utilities)
+- [Guide](#guide)
+	- [Summary](#summary)
+	- [Actions](#actions)
+	- [Hooks](#hooks)
+	- [Profiles](#profiles)
+	- [Extras](#extras)
+	- [Utilities](#utilities)
 
 ## Actions
 
@@ -29,8 +38,6 @@ Hooks are placed in the `hooks` subdirectory. The supported hooks are:
 - `actionPlumbingAfter.sh`
 - `actionBefore.sh`
 - `actionAfter.sh`
-- `bootstrapBefore.sh`
-- `bootstrapAfter.sh`
 - `doctorBefore.sh`
 - `doctorAfter.sh`
 - `updateBefore.sh`

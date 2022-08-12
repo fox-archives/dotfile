@@ -9,8 +9,8 @@ fi
 git clone https://github.com/hyperupcall/dotmgr ~/.bootstrap/dotmgr
 
 # When this file is sourced, we want `dotmgr` to be in the `PATH`. This is a temporary thing, that
-# only affects a single shell. Make sure you make it a perminant thing when `dotmgr bootstrap` is
-# ran (by modifying the PATH in a `~/.dotfiles/hooks/bootstrapAfter.sh` file)
+# only affects a single shell. Make sure you make it a permenant thing when `dotmgr action
+# bootstrap` is ran
 cat > ~/.bootstrap/bootstrap-out.sh <<"EOF"
 PATH="$HOME/.bootstrap/dotmgr/bin:$PATH"
 EOF
@@ -19,5 +19,5 @@ EOF
 cat <<"EOF"
 --- Run the following ---
 source ~/.bootstrap/bootstrap-out.sh
-dotmgr bootstrap
+dotmgr action bootstrap
 EOF
