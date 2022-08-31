@@ -85,7 +85,7 @@ _helper.run_actions() {
 			fi
 		done < "$actions_dir/$file.sh"; unset -v line
 
-		if [ "$mode" = 'default' ]; then
+		if [[ $mode != 'default' && $mode != 'description' && $mode != 'default-post' ]]; then
 			actions+=("$file")
 
 			term.italic 'Not Applicable'
