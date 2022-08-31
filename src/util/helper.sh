@@ -37,7 +37,7 @@ _helper.run_actions() {
 		fi
 	fi
 
-	local left_str='                     |'
+	local left_str='                       |'
 	local -i selected=0
 
 	local -a actions=() descriptions=()
