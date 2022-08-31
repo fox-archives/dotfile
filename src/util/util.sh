@@ -91,7 +91,7 @@ _util.source_and_run_main() {
 	unset -f main
 	source "$file"
 	if declare -f main &>/dev/null; then
-		if main "$@"; then :; else
+		if DOTFILES_ROOT="${user_dotmgr_dir%/*}" main "$@"; then :; else
 			return $?
 		fi
 	else
