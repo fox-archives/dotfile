@@ -18,4 +18,4 @@ This means dotmgr was not able to deduce your dotmgr _content directory_. This i
 
 By default, it will try to use `~/.dotfiles/dotmgr` and `~/.dots/dotmgr`. If neither exist, it will error. Avoid the error by writing a `.dotmgr_dir` file with the content being the full path to your dotmgr content directory.
 
-For example, if you cloned this repository to `~/.dotmgr` and your dotmgr content directory is at `~/my-dotfiles/dotmgr`, then write the file `~/.dotmgr/dotmgr_dir` with the content `~/my-dotfiles/dotmgr`.
+For example, if you cloned this repository to `~/.dotmgr` and your dotmgr content directory is at `~/my-dotfiles/dotmgr`, then write the file `~/.dotmgr/.dotmgr_dir` with the content `~/my-dotfiles/dotmgr`.

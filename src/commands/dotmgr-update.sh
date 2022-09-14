@@ -7,5 +7,10 @@ dotmgr-update() {
 	_helper.source_utils "$user_dotmgr_dir" "$@"
 	_helper.run_hook "$user_dotmgr_dir" 'updateBefore' "$@"
 
+	printf '%s\n' "Updaing: $DOTMGR_ROOT"
+	git -C "$DOTMGR_ROOT" status --short
+	git -C "$DOTMGR_ROOT" pull
+	git -C "$DOTMGR_ROOT" status --short
+
 	_helper.run_hook "$user_dotmgr_dir" 'updateAfter' "$@"
 }
