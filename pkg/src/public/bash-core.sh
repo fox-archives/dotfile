@@ -20,6 +20,7 @@ core.trap_add() {
 	local function="$1"
 
 	core.private.util.validate_args "$function" $#
+	local signal_spec=
 	for signal_spec in "${@:2}"; do
 		core.private.util.validate_signal "$function" "$signal_spec"
 
@@ -62,6 +63,7 @@ core.trap_remove() {
 	local function="$1"
 
 	core.private.util.validate_args "$function" $#
+	local signal_spec=
 	for signal_spec in "${@:2}"; do
 		core.private.util.validate_signal "$function" "$signal_spec"
 
@@ -327,13 +329,6 @@ core.print_debug_fn() {
 	core.print_debug "${FUNCNAME[1]}()${msg:+": "}$msg"
 }
 
-# @description Print a error message to standard error and die
-# @arg $1 string message
-core.print_die() {
-	core.print_fatal "$1"
-	exit 1
-}
-
 # @description Print a fatal error message to standard error
 # @arg $1 string message
 core.print_fatal() {
@@ -376,9 +371,9 @@ core.print_info() {
 	local msg="$1"
 
 	if core.private.should_print_color 1; then
-		printf "\033[1;32m%s:\033[0m %s\n" 'Info' "$msg" >&2
+		printf "\033[1;32m%s:\033[0m %s\n" 'Info' "$msg"
 	else
-		printf "%s: %s\n" 'Info' "$msg" >&2
+		printf "%s: %s\n" 'Info' "$msg"
 	fi
 }
 
@@ -435,4 +430,20 @@ core.init() {
 core.stacktrace_print() {
 	core.print_warn "The function 'core.stacktrace_print' is deprecated in favor of 'core.print_stacktrace'"
 	core.print_stacktrace "$@"
+}
+
+# @description (DEPRECATED) Print a error message to standard error including the function name
+# of the callee to standard error and die
+# @arg $1 string message
+core.print_die_fn() {
+	local msg="$1"
+
+	core.print_die "${FUNCNAME[1]}()${msg:+": "}$msg"
+}
+
+# @description (DEPRECATED) Print a error message to standard error and die
+# @arg $1 string message
+core.print_die() {
+	core.print_fatal "$1"
+	exit 1
 }
