@@ -18,3 +18,8 @@ done; unset -v f
 for f in "$DOTMGR_ROOT"/vendor/bash-term/pkg/src/{public,util}/?*.sh; do
 	source "$f"
 done; unset -v f
+
+global_err_handler() {
+	core.print_stacktrace
+}
+core.trap_add 'global_err_handler' ERR
