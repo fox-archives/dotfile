@@ -3,11 +3,13 @@
 dotmgr-action-plumbing() {
 	local -a pkgs=()
 	# shellcheck disable=SC1007
-	local arg= flag_sudo='no'
+	local arg= flag_sudo='no' flag_list='no'
 	for arg; do case $arg in
 	--sudo)
 		flag_sudo='yes'
 		;;
+	--list)
+		flag_list='yes'
 	-*)
 		print.die "Flag '$arg' not recognized"
 		;;
@@ -23,6 +25,16 @@ dotmgr-action-plumbing() {
 
 	if [ "$flag_sudo" = 'yes' ] && (( EUID != 0)); then
 		DOTMGR_DIR="$user_dotmgr_dir" exec sudo --preserve-env='DOTMGR_DIR' "$0" action-plumbing "$@"
+	fi
+
+	if [ "$flag_list" = 'yes' ]; then
+		if ((EUID == 0)); then
+			ls -- "$user_dotmgr_dir/actions-plumbing-sudo"
+		else
+			ls -- "$user_dotmgr_dir/actions-plumbing"
+		fi
+
+		return
 	fi
 
 	_helper.source_utils "$user_dotmgr_dir" "$@"

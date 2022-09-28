@@ -105,11 +105,11 @@ _util.show_help() {
 		  dotmgr [command]
 
 		Commands:
-		  action [--sudo]
+		  action [--list] [--sudo]
 		    Perform a particular action. If no action was given, show
 		    a selection screen for the different actions
 
-		  action-plumbing [--sudo]
+		  action-plumbing [--list] [--sudo]
 		    Perform a plumbing action. These are automatically called by 'action', but
 		    in case of issues, they can be called manually
 
