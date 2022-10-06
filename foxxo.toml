@@ -1,4 +1,9 @@
+[project]
 ecosystem = 'unknown'
 form = 'unknown'
 for = 'anyone'
 status = 'earlyaccess'
+
+[discovery]
+categories = []
+tags = []
