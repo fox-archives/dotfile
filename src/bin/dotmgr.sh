@@ -9,6 +9,10 @@ main.dotmgr() {
 		_util.show_help
 		exit
 		;;
+	-v|--version)
+		_util.show_version
+		exit
+		;;
 	esac done; unset -v arg
 
 	local subcommand="$1"

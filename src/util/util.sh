@@ -147,7 +147,14 @@ _util.show_help() {
 		  --help
 		    Show help menu
 
+		  --version
+		    Show version
+
 		Examples:
 		  dotmgr action
 	EOF
+}
+
+_util.show_version() {
+	printf '%s\n' 'v2.0.0'
 }
