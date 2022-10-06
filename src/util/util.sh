@@ -156,5 +156,5 @@ _util.show_help() {
 }
 
 _util.show_version() {
-	printf '%s\n' 'v2.0.0'
+	printf '%s\n' 'v2.1.0'
 }
