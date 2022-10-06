@@ -2,6 +2,7 @@
 
 dotmgr-action() {
 	_helper.parse_action_args "$@"
+	local action="$REPLY"
 
 	_util.get_user_dotmgr_dir
 	local user_dotmgr_dir="$REPLY"

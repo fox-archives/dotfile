@@ -11,6 +11,8 @@ _helper.source_utils() {
 }
 
 _helper.parse_action_args() {
+	unset -v REPLY; REPLY=
+
 	local -a pkgs=()
 	# shellcheck disable=SC1007
 	local arg= flag_{list,view,edit,sudo}='no'
@@ -86,6 +88,8 @@ _helper.parse_action_args() {
 
 		exit 0
 	fi
+
+	REPLY=$action_file
 }
 
 _helper.run_hook() {
@@ -100,15 +104,12 @@ _helper.run_hook() {
 
 _helper.run_actions() {
 	local actions_dir="$1"
-	local action="$2"
+	local action_file="$2"
 
 	_util.get_file_list "$actions_dir"
 	local -a files_list=("${REPLY[@]}")
 
-	if [ -n "$action" ]; then
-		_util.get_action_file "$actions_dir" "$action"
-		local action_file="$REPLY"
-
+	if [ -n "$action_file" ]; then
 		_util.source_and_run_main "$action_file" "$@"
 		exit 0
 	fi
