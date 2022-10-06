@@ -33,7 +33,8 @@ _helper.parse_action_args() {
 		flag_internal_plumbing='yes'
 		;;
 	-*)
-		print.die "Flag '$arg' not recognized"
+		core.print_error "Flag '$arg' not recognized"
+		exit 1
 		;;
 	*)
 		actions+=("$arg")
