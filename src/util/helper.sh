@@ -11,7 +11,7 @@ _helper.source_utils() {
 }
 
 _helper.parse_action_args() {
-	unset -v REPLY; REPLY=
+	unset -v REPLY{1,2}; REPLY1= REPLY2=
 
 	local -a pkgs=()
 	# shellcheck disable=SC1007
@@ -92,7 +92,8 @@ _helper.parse_action_args() {
 		exit 0
 	fi
 
-	REPLY=$action_file
+	REPLY1=$dir
+	REPLY2=$action_file
 }
 
 _helper.run_hook() {
@@ -106,9 +107,10 @@ _helper.run_hook() {
 }
 
 _helper.run_actions() {
-	local actions_file="$1"
+	local action_dir="$1"
+	local action_file="$2"
 
-	_util.get_file_list "${actions_file%/*}"
+	_util.get_file_list "$action_dir"
 	local -a files_list=("${REPLY[@]}")
 
 	if [ -n "$action_file" ]; then

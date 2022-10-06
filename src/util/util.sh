@@ -83,12 +83,22 @@ _util.get_file_list() {
 
 _util.get_action_file() {
 	unset -v REPLY; REPLY=
-	local actions_dir="$1"
+	local action_dir="$1"
 	local action="$2"
 
-	local -a action_files=("$actions_dir/"*"$action"*)
+	if [ -z "$action" ]; then
+		REPLY=
+		return
+	fi
+
+	core.shopt_push -s nullglob
+	local -a action_files=("$action_dir"/*"$action"*)
+	core.shopt_pop
+
 	if (( ${#action_files[@]} == 0 )); then
 		core.print_die "Failed to find file matching '$action'"
+	elif (( ${#action_files[@]} > 1 )); then
+		core.print_die "More than one file was matched with action: '$action'"
 	fi
 
 	REPLY=${action_files[0]}
