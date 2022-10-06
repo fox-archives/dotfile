@@ -164,7 +164,7 @@ _helper.run_actions() {
 
 				descriptionsi=$((descriptionsi++))
 			fi
-		done < "$actions_dir/$file.sh"; unset -v line
+		done < "$action_dir/$file.sh"; unset -v line
 
 		if [[ $mode != 'default' && $mode != 'description' && $mode != 'default-post' ]]; then
 			actions+=("$file")
@@ -207,13 +207,13 @@ _helper.run_actions() {
 		e)
 			core.trap_remove _tty.fullscreen_deinit_and_exit 'EXIT'
 			_tty.fullscreen_deinit
-			"$EDITOR" "$actions_dir/${files_list[$selected]}.sh"
+			"$EDITOR" "$action_dir/${files_list[$selected]}.sh"
 			_tty.fullscreen_init
 			;;
 		$'\n'|$'\x0d')
 			core.trap_remove _tty.fullscreen_deinit_and_exit 'EXIT'
 			_tty.fullscreen_deinit
-			_util.source_and_run_main "$actions_dir/${files_list[$selected]}.sh"
+			_util.source_and_run_main "$action_dir/${files_list[$selected]}.sh"
 			exit
 			;;
 		1|2|3|4|5|6|7|8|9)
