@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 
 dotmgr-action-plumbing() {
-	_helper.parse_action_args "$@"
+	_helper.parse_action_args --internal-plumbing "$@"
 	local action="$REPLY"
 
 	_util.get_user_dotmgr_dir

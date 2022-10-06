@@ -15,7 +15,7 @@ _helper.parse_action_args() {
 
 	local -a pkgs=()
 	# shellcheck disable=SC1007
-	local arg= flag_{list,view,edit,sudo}='no'
+	local arg= flag_{list,view,edit,sudo}='no' flag_internal_plumbing='no'
 	for arg; do case $arg in
 	--list)
 		flag_list='yes'
@@ -28,6 +28,9 @@ _helper.parse_action_args() {
 		;;
 	--sudo)
 		flag_sudo='yes'
+		;;
+	--internal-plumbing)
+		flag_internal_plumbing='yes'
 		;;
 	-*)
 		print.die "Flag '$arg' not recognized"
@@ -49,22 +52,21 @@ _helper.parse_action_args() {
 		DOTMGR_DIR="$user_dotmgr_dir" exec sudo --preserve-env='DOTMGR_DIR' "$0" action "$@"
 	fi
 
-	local dir=
+	local dir="$user_dotmgr_dir/actions"
+
+	if [ "$flag_internal_plumbing" = 'yes' ]; then
+		dir="$dir-plumbing"
+	fi
+
 	if ((EUID == 0)); then
-		dir="$user_dotmgr_dir/actions-sudo"
-	else
-		dir="$user_dotmgr_dir/actions"
+		dir="$dir/-sudo"
 	fi
 
 	_util.get_action_file "$dir" "${actions[0]}"
 	local action_file="$REPLY"
 
 	if [ "$flag_list" = 'yes' ]; then
-		if ((EUID == 0)); then
-			ls -- "$dir"
-		else
-			ls -- "$dir"
-		fi
+		ls -- "$dir"
 
 		exit 0
 	fi
