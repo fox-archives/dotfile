@@ -10,6 +10,84 @@ _helper.source_utils() {
 	done; unset -v f
 }
 
+_helper.parse_action_args() {
+	local -a pkgs=()
+	# shellcheck disable=SC1007
+	local arg= flag_{list,view,edit,sudo}='no'
+	for arg; do case $arg in
+	--list)
+		flag_list='yes'
+		;;
+	--view)
+		flag_view='yes'
+		;;
+	--edit)
+		flag_edit='yes'
+		;;
+	--sudo)
+		flag_sudo='yes'
+		;;
+	-*)
+		print.die "Flag '$arg' not recognized"
+		;;
+	*)
+		actions+=("$arg")
+		;;
+	esac done; unset -v arg
+
+	if ((${#actions[@]} > 1)); then
+		core.print_error "Must only pass one action name"
+		exit 1
+	fi
+
+	_util.get_user_dotmgr_dir
+	local user_dotmgr_dir="$REPLY"
+
+	if [ "$flag_sudo" = 'yes' ] && (( EUID != 0)); then
+		DOTMGR_DIR="$user_dotmgr_dir" exec sudo --preserve-env='DOTMGR_DIR' "$0" action "$@"
+	fi
+
+	local dir=
+	if ((EUID == 0)); then
+		dir="$user_dotmgr_dir/actions-sudo"
+	else
+		dir="$user_dotmgr_dir/actions"
+	fi
+
+	_util.get_action_file "$dir" "${actions[0]}"
+	local action_file="$REPLY"
+
+	if [ "$flag_list" = 'yes' ]; then
+		if ((EUID == 0)); then
+			ls -- "$dir"
+		else
+			ls -- "$dir"
+		fi
+
+		exit 0
+	fi
+
+	if [ "$flag_view" = 'yes' ]; then
+		if [ -n "$PAGER" ]; then
+			exec "$PAGER" "$action_file"
+		fi
+
+		exec less "$action_file"
+
+		exit 0
+	fi
+
+	if [ "$flag_edit" = 'yes' ]; then
+		if [ -n "$VISUAL" ]; then
+			exec "$VISUAL" "$action_file"
+		fi
+
+		exec vim "$action_file"
+
+		exit 0
+	fi
+}
+
 _helper.run_hook() {
 	local user_dotmgr_dir="$1"
 	local hook_name="$2"
@@ -28,13 +106,11 @@ _helper.run_actions() {
 	local -a files_list=("${REPLY[@]}")
 
 	if [ -n "$action" ]; then
-		local -a action_files=("$actions_dir/"*"$action"*)
-		if (( ${#action_files[@]} == 0 )); then
-			core.print_die "Failed to find file matching '$action'"
-		else
-			_util.source_and_run_main "${action_files[0]}" "$@"
-			exit
-		fi
+		_util.get_action_file "$actions_dir" "$action"
+		local action_file="$REPLY"
+
+		_util.source_and_run_main "$action_file" "$@"
+		exit 0
 	fi
 
 	local left_str='                       |'

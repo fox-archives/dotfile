@@ -81,6 +81,19 @@ _util.get_file_list() {
 	done; unset -v file
 }
 
+_util.get_action_file() {
+	unset -v REPLY; REPLY=
+	local actions_dir="$1"
+	local action="$2"
+
+	local -a action_files=("$actions_dir/"*"$action"*)
+	if (( ${#action_files[@]} == 0 )); then
+		core.print_die "Failed to find file matching '$action'"
+	fi
+
+	REPLY=${action_files[0]}
+}
+
 _util.source_and_run_main() {
 	local file="$1"
 
@@ -105,11 +118,11 @@ _util.show_help() {
 		  dotmgr [command]
 
 		Commands:
-		  action [--list] [--sudo]
+		  action [--list] [--view] [--edit] [--sudo] [file]
 		    Perform a particular action. If no action was given, show
 		    a selection screen for the different actions
 
-		  action-plumbing [--list] [--sudo]
+		  action-plumbing [--list] [--view] [--edit] [--sudo] [file]
 		    Perform a plumbing action. These are automatically called by 'action', but
 		    in case of issues, they can be called manually
 

@@ -29,7 +29,10 @@ dotmgr.call() {
 
 	local -a files=("$dir/"*"$filename"*)
 	if (( ${#files[@]} == 0 )); then
-		core.print_error "Failed to find file matching '$filename'"
+		core.print_error "Failed to find file matching '$filename'" # TODO: print directory searched
+		if ! util.confirm 'Continue?'; then
+			exit 1
+		fi
 	else
 		core.print_info "Executing ${files[0]}"
 		FORCE_COLOR=3 _util.source_and_run_main "${files[0]}" "$@" \
