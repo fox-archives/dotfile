@@ -11,20 +11,19 @@ dotmgr.get_profile() {
 }
 
 dotmgr.call() {
-	local filename="$1"
-
-	# shellcheck disable=SC1007
-	local arg= flag_sudo='no'
-	for arg; do case $arg in
-		--sudo) flag_sudo='yes' ;;
-	esac done; unset -v arg
-
 	_util.get_user_dotmgr_dir
 	local user_dotmgr_dir="$REPLY"
 
-	local dir="$user_dotmgr_dir/actions-plumbing"
-	if [ "$flag_sudo" = 'yes' ]; then
-		dir="$user_dotmgr_dir/actions-plumbing-sudo"
+	if (( $# == 1 )); then
+		local dir="$user_dotmgr_dir/actions-plumbing"
+		local filename="$1"
+	elif (( $# == 2)); then
+		local dir="$user_dotmgr_dir/$1"
+		local filename="$2"
+	fi
+
+	if ((EUID == 0)); then
+		dir="$dir-sudo"
 	fi
 
 	local -a files=("$dir/"*"$filename"*)
