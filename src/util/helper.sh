@@ -105,10 +105,9 @@ _helper.run_hook() {
 }
 
 _helper.run_actions() {
-	local actions_dir="$1"
-	local action_file="$2"
+	local actions_file="$1"
 
-	_util.get_file_list "$actions_dir"
+	_util.get_file_list "${actions_file%/*}"
 	local -a files_list=("${REPLY[@]}")
 
 	if [ -n "$action_file" ]; then
