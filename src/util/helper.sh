@@ -45,11 +45,6 @@ _helper.parse_action_args() {
 		;;
 	esac done; unset -v arg
 
-	if ((${#scripts[@]} == 0)); then
-		core.print_error "Must pass at least one action name"
-		exit 1
-	fi
-
 	if ((${#scripts[@]} > 1)); then
 		core.print_error "Must only pass one action name"
 		exit 1
