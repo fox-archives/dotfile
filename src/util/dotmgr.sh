@@ -28,7 +28,7 @@ dotmgr.call() {
 
 	local -a files=("$dir/"*"$filename"*)
 	if (( ${#files[@]} == 0 )); then
-		core.print_error "Failed to find file matching '$filename'" # TODO: print directory searched
+		core.print_error "Failed to find file matching '$filename' in dir '$dir'"
 		if ! util.confirm 'Continue?'; then
 			exit 1
 		fi

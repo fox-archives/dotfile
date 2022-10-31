@@ -96,7 +96,7 @@ _util.get_action_file() {
 	core.shopt_pop
 
 	if (( ${#action_files[@]} == 0 )); then
-		core.print_die "Failed to find file matching '$action'"
+		core.print_die "Failed to find file matching '$action' in dir '$action_dir'"
 	elif (( ${#action_files[@]} > 1 )); then
 		core.print_die "More than one file was matched with action: '$action'"
 	fi
@@ -128,13 +128,9 @@ _util.show_help() {
 		  dotmgr [command]
 
 		Commands:
-		  action [--list] [--view] [--edit] [--sudo] [file]
-		    Perform a particular action. If no action was given, show
+		  run [--list] [--view] [--edit] [--sudo] [-d=<dir>] [file]
+		    Runs a particular script. If no action was given, show
 		    a selection screen for the different actions
-
-		  action-plumbing [--list] [--view] [--edit] [--sudo] [file]
-		    Perform a plumbing action. These are automatically called by 'action', but
-		    in case of issues, they can be called manually
 
 		  doctor
 		    Get information about the current system. Currently, it lists
@@ -151,7 +147,10 @@ _util.show_help() {
 		    Show version
 
 		Examples:
-		  dotmgr action
+		  dotmgr run --list
+		  dotmgr run bootstrap
+		  dotmgr run install install_brave.sh
+		  dotmgr run install brave
 	EOF
 }
 

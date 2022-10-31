@@ -13,9 +13,9 @@ _helper.source_utils() {
 _helper.parse_action_args() {
 	unset -v REPLY{1,2}; REPLY1= REPLY2=
 
-	local -a pkgs=()
+	local -a scripts=()
 	# shellcheck disable=SC1007
-	local arg= flag_{list,view,edit,sudo}='no' flag_internal_plumbing='no'
+	local arg= flag_{list,view,edit,sudo}='no' flag_dir=
 	for arg; do case $arg in
 	--list)
 		flag_list='yes'
@@ -29,19 +29,28 @@ _helper.parse_action_args() {
 	--sudo)
 		flag_sudo='yes'
 		;;
-	--internal-plumbing)
-		flag_internal_plumbing='yes'
+	-d*)
+		if [[ $arg != *=* ]]; then
+			core.print_error "Argument must have a value: -d"
+			exit 1
+		fi
+		flag_dir=${arg#*=}
 		;;
 	-*)
 		core.print_error "Flag '$arg' not recognized"
 		exit 1
 		;;
 	*)
-		actions+=("$arg")
+		scripts+=("$arg")
 		;;
 	esac done; unset -v arg
 
-	if ((${#actions[@]} > 1)); then
+	if ((${#scripts[@]} == 0)); then
+		core.print_error "Must pass at least one action name"
+		exit 1
+	fi
+
+	if ((${#scripts[@]} > 1)); then
 		core.print_error "Must only pass one action name"
 		exit 1
 	fi
@@ -50,20 +59,20 @@ _helper.parse_action_args() {
 	local user_dotmgr_dir="$REPLY"
 
 	if [ "$flag_sudo" = 'yes' ] && (( EUID != 0)); then
-		DOTMGR_DIR="$user_dotmgr_dir" exec sudo --preserve-env='DOTMGR_DIR' "$0" action "$@"
+		DOTMGR_DIR="$user_dotmgr_dir" exec sudo --preserve-env='DOTMGR_DIR' "$0" "$@"
 	fi
 
-	local dir="$user_dotmgr_dir/actions"
+	local dir="$user_dotmgr_dir/run"
 
-	if [ "$flag_internal_plumbing" = 'yes' ]; then
-		dir="$dir-plumbing"
+	if [ -n "$flag_dir" ]; then
+		dir="$dir-$flag_dir"
 	fi
 
 	if ((EUID == 0)); then
-		dir="$dir/-sudo"
+		dir="$dir-sudo"
 	fi
 
-	_util.get_action_file "$dir" "${actions[0]}"
+	_util.get_action_file "$dir" "${scripts[0]}"
 	local action_file="$REPLY"
 
 	if [ "$flag_list" = 'yes' ]; then

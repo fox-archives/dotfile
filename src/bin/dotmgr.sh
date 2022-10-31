@@ -21,7 +21,7 @@ main.dotmgr() {
 			core.print_die "Failed to shift"
 		fi
 		source "$DOTMGR_ROOT/src/commands/dotmgr-$subcommand.sh"
-		dotmgr-"$subcommand" "$@"
+		"dotmgr-$subcommand" "$@"
 	else
 		_util.show_help
 		core.print_error 'No matching subcommand found'

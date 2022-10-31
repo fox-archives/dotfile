@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-dotmgr-action() {
+dotmgr-run() {
 	_helper.parse_action_args "$@"
 	local action_dir="$REPLY1"
 	local action_file="$REPLY2"
