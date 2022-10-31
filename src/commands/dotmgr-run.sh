@@ -10,12 +10,12 @@ dotmgr-run() {
 
 	_helper.source_utils "$user_dotmgr_dir" "$@"
 	if ((EUID == 0)); then
-		_helper.run_hook "$user_dotmgr_dir" 'actionBeforeSudo' "$@"
+		_helper.run_hook "$user_dotmgr_dir" 'runBeforeSudo' "$@"
 		_helper.run_actions "$action_dir" "$action_file" "$@"
-		_helper.run_hook "$user_dotmgr_dir" 'actionAfterSudo' "$@"
+		_helper.run_hook "$user_dotmgr_dir" 'runAfterSudo' "$@"
 	else
-		_helper.run_hook "$user_dotmgr_dir" 'actionBefore' "$@"
+		_helper.run_hook "$user_dotmgr_dir" 'runBefore' "$@"
 		_helper.run_actions "$action_dir" "$action_file" "$@"
-		_helper.run_hook "$user_dotmgr_dir" 'actionAfter' "$@"
+		_helper.run_hook "$user_dotmgr_dir" 'runAfter' "$@"
 	fi
 }
