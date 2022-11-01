@@ -2,18 +2,13 @@
 
 # @description From start to current cursor, get the array of subcommands
 _dotmgr_wowzers_get_fn() {
-	local _commands_level_0_name="$1"
-	local _commands_level_1_name="$2"
-	local -n _commands_level_0="$_commands_level_0_name"
-	local -n _commands_level_1="$_commands_level_1_name"
-
 	unset -v REPLY
 	REPLY='_dotmgr_cmd'
 
 	local word=
 	for word in "${COMP_WORDS[@]}"; do
 		local cmd=
-		for cmd in "${_commands_level_0[@]}" "${_commands_level_1[@]}"; do
+		for cmd in "${global_commands_level_0[@]}" "${global_commands_level_1[@]}"; do
 			if [ "$cmd" = "$word" ]; then
 				REPLY+=${word:+::$word}
 			fi
@@ -27,18 +22,14 @@ _dotmgr_wowzers_util_next_subcommand() {
 
 # Custom
 _dotmgr_cmd::dotmgr() {
-	local _commands_level_1_name="$2"
-	local -n _commands_level_1="$_commands_level_1_name"
-
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	COMPREPLY=($(compgen -W "${_commands_level_1[*]} --help" -- "$cur"))
+	COMPREPLY=($(compgen -W "${global_commands_level_1[*]} --help" -- "$cur"))
 }
 
 _dotmgr_cmd::dotmgr::run() {
 	local cur="${COMP_WORDS[COMP_CWORD]}"
 
 	local mode='MODE_DEFAULT'
-	echo "$cur" >> /tmp/f
 	if [[ $cur == -d* ]]; then
 		mode='MODE_COMPLETE_DIR'
 	fi
@@ -88,15 +79,14 @@ _dotmgr_cmd::dotmgr::update() {
 }
 
 _dotmgr() {
-	local commands_level_0=(dotmgr) # So it works easier with aliases, symlinks, etc.
-	local commands_level_1=(run doctor update)
+	local global_commands_level_0=(dotmgr) # So it works easier with aliases, symlinks, etc.
+	local global_commands_level_1=(run doctor update)
 
 	# FIXME do not hardcode
 	dotmgr_dir="$HOME/.dots/dotmgr"
-	# COMP_WORDBREAKS=$' \n"\'><=;|&(:' # default
-	COMP_WORDBREAKS=$' \n"\'><;|&(:' # default
+	COMP_WORDBREAKS=$' \n"\'><;|&(:' # remove '='
 
-	_dotmgr_wowzers_get_fn 'commands_level_0' 'commands_level_1'
+	_dotmgr_wowzers_get_fn
 	local fn="$REPLY"
 
 	if [[ -v DEBUG ]]; then
@@ -110,16 +100,16 @@ _dotmgr() {
 			# when we are at 'cmd aa' (just after typing the a), we need
 			# the completion for 'cmd' to run (not 'cmd aa'). That way, 'aa' won't be
 			# overriden. This forces that.
-			"${fn%::*}" 'commands_level_0' 'commands_level_1'
+			"${fn%::*}"
 		else
-			"$fn" 'commands_level_0' 'commands_level_1'
+			"$fn"
 		fi
 	else
 		# for 'cmd aa bb cc',
 		# this ensures that 'cmd a' works
 		fn=${fn%::*}
 		if declare -F "$fn" &>/dev/null ; then
-			"$fn" 'commands_level_0' 'commands_level_1'
+			"$fn"
 		fi
 	fi
 }
