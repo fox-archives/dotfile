@@ -2,15 +2,22 @@
 
 # @description From start to current cursor, get the array of subcommands
 _dotmgr_wowzers_get_fn() {
+	local _commands_level_0_name="$1"
+	local _commands_level_1_name="$2"
+	local -n _commands_level_0="$_commands_level_0_name"
+	local -n _commands_level_1="$_commands_level_1_name"
+
 	unset -v REPLY
-	REPLY=_dotmgr_cmd
+	REPLY='_dotmgr_cmd'
 
 	local word=
 	for word in "${COMP_WORDS[@]}"; do
-		case $word in
-			-*) ;;
-			*) REPLY+=${word:+::$word}
-		esac
+		local cmd=
+		for cmd in "${_commands_level_0[@]}" "${_commands_level_1[@]}"; do
+			if [ "$cmd" = "$word" ]; then
+				REPLY+=${word:+::$word}
+			fi
+		done; unset -v cmd
 	done; unset -v word
 }
 
@@ -20,8 +27,11 @@ _dotmgr_wowzers_util_next_subcommand() {
 
 # Custom
 _dotmgr_cmd::dotmgr() {
+	local _commands_level_1_name="$2"
+	local -n _commands_level_1="$_commands_level_1_name"
+
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	COMPREPLY=($(compgen -W "run doctor update --help" -- "$cur"))
+	COMPREPLY=($(compgen -W "${_commands_level_1[*]} --help" -- "$cur"))
 }
 
 _dotmgr_cmd::dotmgr::run() {
@@ -78,12 +88,15 @@ _dotmgr_cmd::dotmgr::update() {
 }
 
 _dotmgr() {
+	local commands_level_0=(dotmgr) # So it works easier with aliases, symlinks, etc.
+	local commands_level_1=(run doctor update)
+
 	# FIXME do not hardcode
 	dotmgr_dir="$HOME/.dots/dotmgr"
 	# COMP_WORDBREAKS=$' \n"\'><=;|&(:' # default
 	COMP_WORDBREAKS=$' \n"\'><;|&(:' # default
 
-	_dotmgr_wowzers_get_fn
+	_dotmgr_wowzers_get_fn 'commands_level_0' 'commands_level_1'
 	local fn="$REPLY"
 
 	if [[ -v DEBUG ]]; then
@@ -97,16 +110,16 @@ _dotmgr() {
 			# when we are at 'cmd aa' (just after typing the a), we need
 			# the completion for 'cmd' to run (not 'cmd aa'). That way, 'aa' won't be
 			# overriden. This forces that.
-			"${fn%::*}"
+			"${fn%::*}" 'commands_level_0' 'commands_level_1'
 		else
-			"$fn"
+			"$fn" 'commands_level_0' 'commands_level_1'
 		fi
 	else
 		# for 'cmd aa bb cc',
 		# this ensures that 'cmd a' works
 		fn=${fn%::*}
 		if declare -F "$fn" &>/dev/null ; then
-			"$fn"
+			"$fn" 'commands_level_0' 'commands_level_1'
 		fi
 	fi
 }
