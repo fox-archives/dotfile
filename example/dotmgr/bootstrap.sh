@@ -6,7 +6,7 @@ if [ "${BASH_SOURCE[0]}" != "$0" ]; then
 	return 1
 fi
 
-git clone https://github.com/hyperupcall/dotmgr ~/.bootstrap/dotmgr
+git clone 'https://github.com/hyperupcall/dotmgr' ~/.bootstrap/dotmgr
 
 # When this file is sourced, we want `dotmgr` to be in the `PATH`. This is a temporary thing, that
 # only affects a single shell. Make sure you make it a permenant thing when `dotmgr action

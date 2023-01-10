@@ -70,8 +70,6 @@ pub fn get_config() -> Config {
 				let key = l.get(..val).unwrap().trim();
 				let value = l.get(val + 1..).unwrap().trim();
 
-				println!("key: {}\nvalue: {}", key, value);
-
 				if key == "dotmgr_src_dir" {
 					if value.starts_with("~/") {
 						let v: String = value.chars().skip(2).collect();
