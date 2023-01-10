@@ -2,46 +2,19 @@
 
 use clap::Parser;
 use cli::{Cli, CliCommands};
-use crossterm::{
-	event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
-	execute,
-	terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
-};
-use glob::glob;
 use std::{
 	collections::HashMap,
-	io::{self, BufRead, BufReader},
-	path::{Path, PathBuf},
-	process::{self, exit, Command, ExitStatus, Stdio},
-};
-use tui::{
-	backend::{Backend, CrosstermBackend},
-	layout::{Constraint, Direction, Layout},
-	style::{Modifier, Style},
-	text::{Span, Spans},
-	widgets::{Block, Borders, Paragraph},
-	Frame, Terminal,
+	io::{BufRead, BufReader},
+	process::{Command, Stdio},
 };
 
 mod cli;
 use crate::cli::ScriptCommands;
 
+mod tui;
+
 mod util;
 use util::{get_entrypoint, When};
-
-struct App {
-	file_num: u32,
-	desc_num: u32,
-}
-
-impl App {
-	fn new() -> App {
-		App {
-			file_num: 1,
-			desc_num: 2,
-		}
-	}
-}
 
 fn main() {
 	let cli = Cli::parse();
@@ -62,18 +35,18 @@ fn main() {
 						.spawn()
 						.unwrap();
 				}
-				ScriptCommands::View { file: script_frag } => {
-					let script = util::glob_script(scripts_path.to_str().unwrap(), script_frag);
+				ScriptCommands::View { glob } => {
+					let script = util::get_script_from_glob(scripts_path, glob);
 
-					Command::new("less")
+					Command::new("bat")
 						.arg(script)
 						.spawn()
 						.unwrap()
 						.wait()
 						.unwrap();
 				}
-				ScriptCommands::Edit { file: script_frag } => {
-					let script = util::glob_script(scripts_path.to_str().unwrap(), script_frag);
+				ScriptCommands::Edit { glob } => {
+					let script = util::glob_script(scripts_path.to_str().unwrap(), glob);
 
 					Command::new(util::get_editor())
 						.args([script])
@@ -82,10 +55,7 @@ fn main() {
 						.wait()
 						.unwrap();
 				}
-				ScriptCommands::Run {
-					file: script_frag,
-					sudo,
-				} => {
+				ScriptCommands::Run { glob, sudo } => {
 					let get_environment = || -> HashMap<String, String> {
 						let s = config.dotmgr_dir.to_str().unwrap();
 						let environment_script = String::from(s) + "/impl/environment.sh";
@@ -120,7 +90,7 @@ fn main() {
 					};
 
 					let entrypoint = get_entrypoint(config.dotmgr_dir.to_str().unwrap().clone());
-					let script = util::glob_script(scripts_path.to_str().unwrap(), script_frag);
+					let script = util::glob_script(scripts_path.to_str().unwrap(), glob);
 					let sources = util::get_sources(config.dotmgr_dir.to_str().unwrap().clone());
 
 					Command::new(entrypoint)
@@ -131,80 +101,6 @@ fn main() {
 						.unwrap()
 						.wait()
 						.unwrap();
-					// setup terminal
-					// terminal::enable_raw_mode().unwrap();
-					// let mut stdout = io::stdout();
-					// execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap();
-					// let backend = CrosstermBackend::new(stdout);
-					// let mut terminal = Terminal::new(backend).unwrap();
-
-					// // run
-					// let app = App::new();
-					// let res = run_app(&mut terminal, app);
-
-					// // restore terminal
-					// terminal::disable_raw_mode().unwrap();
-					// execute!(
-					// 	terminal.backend_mut(),
-					// 	LeaveAlternateScreen,
-					// 	DisableMouseCapture
-					// )
-					// .unwrap();
-					// terminal.show_cursor().unwrap();
-
-					// if let Err(err) = res {
-					// 	println!("{:?}", err)
-					// }
-
-					// // functions
-					// fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
-					// 	loop {
-					// 		terminal.draw(|f| ui(f, &app))?;
-
-					// 		if let Event::Key(key) = event::read()? {
-					// 			if let KeyCode::Char('q') = key.code {
-					// 				return Ok(());
-					// 			}
-					// 		}
-					// 	}
-					// }
-
-					// fn create_block(title: &str) -> Block {
-					// 	Block::default()
-					// 		.borders(Borders::ALL)
-					// 		.style(
-					// 			Style::default()
-					// 				.bg(tui::style::Color::White)
-					// 				.fg(tui::style::Color::Black),
-					// 		)
-					// 		.title(Span::styled(
-					// 			title,
-					// 			Style::default().add_modifier(Modifier::BOLD),
-					// 		))
-					// }
-
-					// fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
-					// 	let chunks = Layout::default()
-					// 		.direction(Direction::Horizontal)
-					// 		.constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
-					// 		.split(f.size());
-
-					// 	let block = Block::default().title("Files").borders(Borders::ALL);
-
-					// 	// f.render_widget(block, chunks[0]);
-					// 	let text: Vec<Spans> = vec![Spans::from(app.desc_num.to_string())];
-					// 	// let mut state = Paragraph::St
-					// 	let paragraph = Paragraph::new(text.clone()).block(create_block("other"));
-					// 	f.render_widget(paragraph, chunks[0]);
-
-					// 	//
-					// 	let block = Block::default()
-					// 		.title("Description")
-					// 		.borders(Borders::ALL)
-					// 		.style(Style::default().add_modifier(Modifier::BOLD));
-
-					// 	f.render_widget(block, chunks[1]);
-					// }
 				}
 			}
 		}

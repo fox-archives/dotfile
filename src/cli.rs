@@ -1,27 +1,4 @@
-use std::{
-	env,
-	fs::File,
-	io::{self, BufRead, BufReader},
-	path::PathBuf,
-	process::{exit, Command},
-};
-
 use clap::{Parser, Subcommand};
-use crossterm::{
-	event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
-	execute,
-	terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
-};
-use glob::glob;
-use std::sync::Mutex;
-use tui::{
-	backend::{Backend, CrosstermBackend},
-	layout::{Constraint, Direction, Layout},
-	style::{Modifier, Style},
-	text::{Span, Spans},
-	widgets::{Block, Borders, Paragraph},
-	Frame, Terminal,
-};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -61,10 +38,10 @@ pub enum ScriptCommands {
 	List {},
 
 	/// View a script
-	View { file: String },
+	View { glob: Option<String> },
 
 	/// Edit a script
-	Edit { file: String },
+	Edit { glob: String },
 
 	/// Run a script
 	Run {
@@ -72,7 +49,7 @@ pub enum ScriptCommands {
 		#[arg(long)]
 		sudo: bool,
 
-		file: String,
+		glob: String,
 	},
 }
 

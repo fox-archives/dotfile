@@ -9,6 +9,8 @@ use std::{
 
 use glob::glob;
 
+use crate::tui;
+
 pub enum When {
 	Before,
 	After,
@@ -145,4 +147,11 @@ pub fn get_sources(dotmgr_dir: &str) -> String {
 
 pub fn get_entrypoint(dotmgr_dir: &str) -> PathBuf {
 	return PathBuf::from(dotmgr_dir).join("impl/entrypoint.sh");
+}
+
+pub fn get_script_from_glob(dir: PathBuf, glob_pattern: &Option<String>) -> PathBuf {
+	match glob_pattern {
+		Some(val) => glob_script(dir.to_str().unwrap(), val.as_str()),
+		None => tui::show_menu(dir),
+	}
 }
