@@ -1,0 +1,12 @@
+#![feature(exit_status_error)]
+
+[package]
+name = "dotmgr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.0.32", features = ["derive"] }
+crossterm = "0.25.0"
+glob = "0.3.1"
+tui = "0.19.0"
