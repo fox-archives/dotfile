@@ -38,7 +38,7 @@ fn main() {
 				ScriptCommands::View { glob } => {
 					let script = util::get_script_from_glob(scripts_path, glob);
 
-					Command::new("bat")
+					Command::new(util::get_pager())
 						.arg(script)
 						.spawn()
 						.unwrap()

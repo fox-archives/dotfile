@@ -2,7 +2,6 @@ use std::{
 	env, fmt,
 	fs::File,
 	io::{BufRead, BufReader},
-	os,
 	path::PathBuf,
 	process::exit,
 };
@@ -152,6 +151,12 @@ pub fn get_entrypoint(dotmgr_dir: &str) -> PathBuf {
 pub fn get_script_from_glob(dir: PathBuf, glob_pattern: &Option<String>) -> PathBuf {
 	match glob_pattern {
 		Some(val) => glob_script(dir.to_str().unwrap(), val.as_str()),
-		None => tui::show_menu(dir),
+		None => {
+			return tui::choose_script(dir);
+		}
 	}
+}
+
+pub fn get_pager() -> String {
+	return String::from("bat");
 }
