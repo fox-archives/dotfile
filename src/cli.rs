@@ -1,19 +1,23 @@
 use clap::{Parser, Subcommand};
+use clap_verbosity_flag::Verbosity;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
+	#[clap(flatten)]
+	pub verbose: Verbosity,
+
 	#[command(subcommand)]
 	pub command: CliCommands,
 }
 
 #[derive(Subcommand)]
 pub enum CliCommands {
-	/// Perform an action on a script
+	/// Operate on a script
 	Script {
-		/// view the script with a pager
-		#[arg(short, long)]
-		dir: Option<String>,
+		/// Choose where to select scripts from
+		#[arg(short)]
+		category: Option<String>,
 
 		#[command(subcommand)]
 		command: ScriptCommands,
@@ -30,6 +34,12 @@ pub enum CliCommands {
 
 	/// Updates dotmgr to the latest release
 	Update {},
+
+	/// Run an internal command
+	Internal {
+		#[command(subcommand)]
+		command: InternalCommands,
+	},
 }
 
 #[derive(Subcommand)]
@@ -41,7 +51,7 @@ pub enum ScriptCommands {
 	View { glob: Option<String> },
 
 	/// Edit a script
-	Edit { glob: String },
+	Edit { glob: Option<String> },
 
 	/// Run a script
 	Run {
@@ -49,7 +59,7 @@ pub enum ScriptCommands {
 		#[arg(long)]
 		sudo: bool,
 
-		glob: String,
+		glob: Option<String>,
 	},
 }
 
@@ -59,4 +69,11 @@ pub enum ReconcileCommands {
 	Sync {},
 
 	UnSync {},
+}
+
+#[derive(Subcommand)]
+pub enum InternalCommands {
+	StartWatcher {},
+
+	FindMan { command_line: String },
 }

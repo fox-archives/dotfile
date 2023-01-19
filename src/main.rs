@@ -1,44 +1,54 @@
 #![feature(exit_status_error)]
 
 use clap::Parser;
-use cli::{Cli, CliCommands};
+use colored::Colorize;
+use log::info;
+use notify::{PollWatcher, RecommendedWatcher, RecursiveMode, Watcher, WatcherKind};
 use std::{
 	collections::HashMap,
 	io::{BufRead, BufReader},
-	process::{Command, Stdio},
+	path::{Path, PathBuf},
+	process::{exit, Command, Stdio},
+	time::Duration,
 };
 
 mod cli;
 use crate::cli::ScriptCommands;
+use cli::{Cli, CliCommands, InternalCommands};
 
 mod tui;
 
 mod util;
-use util::{get_entrypoint, When};
+use util::{get_entrypoint_sh, When};
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let cli = Cli::parse();
 	let config = util::get_config();
+	env_logger::Builder::new()
+		.filter_level(cli.verbose.log_level_filter())
+		.init();
 
 	match &cli.command {
-		CliCommands::Script { command, dir } => {
-			let scripts_dirname = match dir {
-				Some(val) => String::from("scripts-") + val,
-				None => String::from("scripts/"),
-			};
-			let scripts_path = config.dotmgr_dir.clone().join(scripts_dirname);
+		CliCommands::Script { command, category } => {
+			let category_path = PathBuf::from(&config.dotmgr_dir).join(match category {
+				Some(val) => format!("scripts-{val}"),
+				None => String::from("scripts"),
+			});
 
 			match &command {
 				ScriptCommands::List {} => {
 					std::process::Command::new("ls")
-						.args(["-x", scripts_path.to_str().unwrap()])
+						.args(["-x", category_path.to_str().unwrap()])
 						.spawn()
 						.unwrap();
 				}
 				ScriptCommands::View { glob } => {
-					let script = util::get_script_from_glob(scripts_path, glob);
+					let script = util::get_script_exec(category_path, glob.clone());
+					let pager = util::get_pager();
 
-					Command::new(util::get_pager())
+					log::info!("pager: {}", pager);
+
+					Command::new(pager)
 						.arg(script)
 						.spawn()
 						.unwrap()
@@ -46,9 +56,12 @@ fn main() {
 						.unwrap();
 				}
 				ScriptCommands::Edit { glob } => {
-					let script = util::glob_script(scripts_path.to_str().unwrap(), glob);
+					let script = util::get_script_exec(category_path, glob.clone());
+					let editor = util::get_editor();
 
-					Command::new(util::get_editor())
+					log::info!("editor: {}", editor);
+
+					Command::new(editor)
 						.args([script])
 						.spawn()
 						.unwrap()
@@ -56,47 +69,29 @@ fn main() {
 						.unwrap();
 				}
 				ScriptCommands::Run { glob, sudo } => {
-					let get_environment = || -> HashMap<String, String> {
-						let s = config.dotmgr_dir.to_str().unwrap();
-						let environment_script = String::from(s) + "/impl/environment.sh";
+					if *sudo {
+						println!("{}", "Not implemented".italic());
+						exit(1);
+					}
 
-						let mut child = Command::new(environment_script)
-							.stdout(Stdio::piped())
-							.spawn()
-							.unwrap();
-
-						let mut map = HashMap::new();
-
-						if let Some(stdout) = &mut child.stdout {
-							let lines = BufReader::new(stdout).lines();
-							for maybe_line in lines {
-								let line = maybe_line.unwrap();
-
-								match line.find("=") {
-									Some(val) => {
-										let key = &line.as_str()[..val];
-										let value = &line.as_str()[val + 1..];
-
-										map.insert(String::from(key), String::from(value));
-									}
-									None => {}
-								}
-							}
-						} else {
-							panic!("Something went wrong");
-						}
-
-						map
-					};
-
-					let entrypoint = get_entrypoint(config.dotmgr_dir.to_str().unwrap().clone());
-					let script = util::glob_script(scripts_path.to_str().unwrap(), glob);
+					let env = util::get_environment(&config)?;
+					let entrypoint = get_entrypoint_sh(config.dotmgr_dir.to_str().unwrap().clone());
+					let script = util::get_script_exec(category_path, glob.clone());
 					let sources = util::get_sources(config.dotmgr_dir.to_str().unwrap().clone());
+
+					for (key, value) in &env {
+						log::info!("env: {key}: {value}")
+					}
+					log::info!("entrypoint: {}", entrypoint.to_str().unwrap());
+					log::info!("script: {}", script.to_str().unwrap());
+					for source in sources.split(":") {
+						log::info!("source: {}", source);
+					}
 
 					Command::new(entrypoint)
 						.arg(script)
 						.arg(sources)
-						.envs(get_environment())
+						.envs(env)
 						.spawn()
 						.unwrap()
 						.wait()
@@ -105,10 +100,12 @@ fn main() {
 			}
 		}
 		CliCommands::Reconcile { .. } => {
-			println!("Not implemented");
+			println!("{}", "Not implemented".italic());
+			exit(1);
 		}
 		CliCommands::Generate {} => {
-			println!("Not implemented");
+			println!("{}", "Not implemented".italic());
+			exit(1);
 		}
 		CliCommands::Update {} => {
 			util::run_hook(&config, When::Before, "update");
@@ -135,5 +132,37 @@ fn main() {
 
 			util::run_hook(&config, When::After, "update");
 		}
+		CliCommands::Internal { command } => match command {
+			InternalCommands::StartWatcher {} => {
+				println!("Starting watcher");
+
+				let (tx, rx) = std::sync::mpsc::channel();
+				// This example is a little bit misleading as you can just create one Config and use it for all watchers.
+				// That way the pollwatcher specific stuff is still configured, if it should be used.
+				let mut watcher: Box<dyn Watcher> =
+					if RecommendedWatcher::kind() == WatcherKind::PollWatcher {
+						// custom config for PollWatcher kind
+						// you
+						let config = notify::Config::default().with_poll_interval(Duration::from_secs(1));
+						Box::new(PollWatcher::new(tx, config).unwrap())
+					} else {
+						// use default config for everything else
+						Box::new(RecommendedWatcher::new(tx, notify::Config::default()).unwrap())
+					};
+
+				// watch some stuff
+				watcher
+					.watch(Path::new("."), RecursiveMode::Recursive)
+					.unwrap();
+
+				// just print all events, this blocks forever
+				for e in rx {
+					println!("{:?}", e);
+				}
+			}
+			InternalCommands::FindMan { command_line } => {}
+		},
 	}
+
+	Ok(())
 }

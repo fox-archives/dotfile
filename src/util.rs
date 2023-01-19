@@ -1,9 +1,10 @@
 use std::{
+	collections::HashMap,
 	env, fmt,
 	fs::File,
 	io::{BufRead, BufReader},
 	path::PathBuf,
-	process::exit,
+	process::{exit, Command, Stdio},
 };
 
 use glob::glob;
@@ -96,67 +97,129 @@ pub fn get_config() -> Config {
 	return config;
 }
 
-pub fn glob_script(dir: &str, substr: &str) -> PathBuf {
-	let mut s = String::from("");
-	s.push_str(dir);
-	s.push_str("/*");
-	s.push_str(substr);
-	s.push_str("*");
-	println!("{}", dir);
-	let mut paths: Vec<PathBuf> = vec![];
-	for result in glob(s.as_str()).unwrap() {
-		paths.push(result.unwrap())
-	}
-
-	if paths.len() > 1 {
-		eprintln!("Your string matches more than one file, try again");
-		exit(1);
-	}
-
-	paths.first().unwrap().clone()
-}
-
-pub fn run_hook(config: &Config, when: When, subcommand_name: &str) {}
-
-pub fn get_editor() -> String {
-	match env::var("VISUAL") {
-		Ok(val) => val,
-		Err(_err) => match env::var("EDITOR") {
-			Ok(val) => val,
-			Err(_err) => String::from("vi"),
-		},
-	}
-}
-
-pub fn get_sources(dotmgr_dir: &str) -> String {
-	let mut paths = String::from("");
-
-	let dir = PathBuf::from(dotmgr_dir).join("util");
-
-	let mut s = String::from(dir.to_str().unwrap());
-	s.push_str("/*.");
-	s.push_str("sh");
-
-	for result in glob(s.as_str()).unwrap() {
-		paths = String::from(paths + String::from(":").as_str()) + result.unwrap().to_str().unwrap();
-	}
-
-	paths
-}
-
-pub fn get_entrypoint(dotmgr_dir: &str) -> PathBuf {
-	return PathBuf::from(dotmgr_dir).join("impl/entrypoint.sh");
-}
-
-pub fn get_script_from_glob(dir: PathBuf, glob_pattern: &Option<String>) -> PathBuf {
+pub fn get_script_exec(dir: PathBuf, glob_pattern: Option<String>) -> PathBuf {
 	match glob_pattern {
-		Some(val) => glob_script(dir.to_str().unwrap(), val.as_str()),
+		Some(ref val) => {
+			let s = String::from(format!("{}/*{}*", dir.to_str().unwrap(), val.as_str()));
+
+			let mut paths: Vec<PathBuf> = vec![];
+			for result in glob(s.as_str()).unwrap() {
+				paths.push(result.unwrap())
+			}
+
+			if paths.len() > 1 {
+				eprintln!("Your string matches more than one file, try again");
+				exit(1);
+			}
+
+			let mut script = paths.first().unwrap().to_owned();
+			if String::from(script.to_str().unwrap()).is_empty() {
+				eprintln!("The found script is empty");
+				exit(1);
+			}
+
+			if script.is_dir() {
+				script = script.join("script.sh");
+			}
+
+			env::set_current_dir(script.parent().unwrap()).unwrap();
+
+			if !script.exists() {
+				eprintln!("Script does not exist: {}", script.to_str().unwrap());
+				exit(1);
+			}
+
+			PathBuf::from(script)
+		}
 		None => {
 			return tui::choose_script(dir);
 		}
 	}
 }
 
+pub fn run_hook(config: &Config, when: When, subcommand_name: &str) {}
+
+pub fn get_entrypoint_sh(dotmgr_dir: &str) -> PathBuf {
+	return PathBuf::from(dotmgr_dir).join("impl/entrypoint.sh");
+}
+
+fn get_environment_sh(dotmgr_dir: &str) -> PathBuf {
+	return PathBuf::from(dotmgr_dir).join("impl/environment.sh");
+}
+
+pub fn get_environment(
+	config: &Config,
+) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
+	let mut map = HashMap::new();
+
+	let environment_script = get_environment_sh(config.dotmgr_dir.to_str().unwrap());
+	let child = Command::new(environment_script)
+		.stdout(Stdio::piped())
+		.spawn()
+		.expect("failed to execute child");
+
+	let output = child.wait_with_output().expect("failed to wait on child");
+
+	for line in String::from_utf8(output.stdout.clone())?.lines() {
+		match line.find("=") {
+			Some(val) => {
+				let key = line[..val].trim().replace('"', "");
+				let value = line[val + 1..].trim().replace('"', "");
+
+				map.insert(String::from(key), String::from(value));
+			}
+			None => {}
+		}
+	}
+
+	Ok(map)
+}
+
+pub fn get_sources(dotmgr_dir: &str) -> String {
+	let mut paths: Vec<String> = Vec::new();
+
+	let dir = PathBuf::from(dotmgr_dir).join("util");
+
+	for result in glob(format!("{}/*.sh", dir.to_str().unwrap()).as_str()).unwrap() {
+		let s = String::from(result.unwrap().to_str().unwrap());
+		paths.push(s);
+	}
+
+	paths.join(":")
+}
+
+pub fn get_editor() -> String {
+	match env::var("VISUAL") {
+		Ok(val) => val,
+		Err(..) => match env::var("EDITOR") {
+			Ok(val) => val,
+			Err(..) => String::from("vi"),
+		},
+	}
+}
+
 pub fn get_pager() -> String {
-	return String::from("bat");
+	if does_command_exist("bat", "--help") {
+		String::from("bat")
+	} else {
+		match env::var("PAGER") {
+			Ok(val) => val,
+			Err(..) => String::from("less"),
+		}
+	}
+}
+
+pub fn does_command_exist(command_name: &str, help_flag: &str) -> bool {
+	let mut command = Command::new(command_name);
+	command.arg(help_flag);
+	command.stdin(Stdio::null());
+	command.stdout(Stdio::null());
+	command.stderr(Stdio::null());
+
+	if let Ok(mut child) = command.spawn() {
+		child.wait().unwrap();
+		true
+	} else {
+		false
+	}
 }

@@ -7,6 +7,11 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.0.32", features = ["derive"] }
+clap-verbosity-flag = "2.0.0"
+colored = "2.0.0"
 crossterm = "0.25.0"
+env_logger = "0.10.0"
 glob = "0.3.1"
+log = "0.4.17"
+notify = { version = "5.0.0", features = ["serde"] }
 tui = "0.19.0"
