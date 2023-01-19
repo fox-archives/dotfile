@@ -11,11 +11,6 @@ use glob::glob;
 
 use crate::tui;
 
-pub enum When {
-	Before,
-	After,
-}
-
 pub struct Config {
 	pub dotfiles_dir: PathBuf,
 	pub dotmgr_src_dir: PathBuf,
@@ -136,8 +131,6 @@ pub fn get_script_exec(dir: PathBuf, glob_pattern: Option<String>) -> PathBuf {
 		}
 	}
 }
-
-pub fn run_hook(config: &Config, when: When, subcommand_name: &str) {}
 
 pub fn get_entrypoint_sh(dotmgr_dir: &str) -> PathBuf {
 	return PathBuf::from(dotmgr_dir).join("impl/entrypoint.sh");

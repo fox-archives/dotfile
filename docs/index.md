@@ -8,6 +8,4 @@ New users, see [Getting Started](./getting-started.md)
 
 Once acclimated, see [Guide](./guide.md). This page is also a reference
 
-For tips, see [Tips](./tips.md)
-
 For project history, see [History](./history.md)

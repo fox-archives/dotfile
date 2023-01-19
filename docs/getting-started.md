@@ -27,10 +27,6 @@ I personally symlink the `dotmgr` executable to a [common bin directory](https:/
 
 ## Initialization
 
-You're almost ready to rock and roll! We provide an initialization script to automatically generate the directories that dotmgr requires:
-
-```sh
-https://raw.githubusercontent.com/hyperupcall/dotmgr/main/scripts/init.sh | bash
-```
+You're almost ready to rock and roll!
 
 Simply follow the insturctions. Once ran, you're ready for [Guide](docs/guide.md)

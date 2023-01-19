@@ -2,6 +2,9 @@
 
 [package]
 name = "dotmgr"
+description = "Dotfile manager"
+license = "MPL-2.0"
+repository = "https://github.com/hyperupcall/dotmgr"
 version = "0.1.0"
 edition = "2021"
 

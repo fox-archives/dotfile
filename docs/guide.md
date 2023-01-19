@@ -1,71 +1,23 @@
 # Guide
 
+- [Guide](#guide)
+  - [Summary](#summary)
+  - [Scripts](#scripts)
+    - [Utilities](#utilities)
+  - [impl](#impl)
+  - [Extras](#extras)
+
 ## Summary
 
 You can customize the behavior of `dotmgr` in three ways
 
-- [Guide](#guide)
-	- [Summary](#summary)
-	- [Actions](#actions)
-	- [Hooks](#hooks)
-	- [Profiles](#profiles)
-	- [Extras](#extras)
-	- [Utilities](#utilities)
+## Scripts
 
-For each of those three ways, you can use other files or functions
+Scripts, located in `scripts` or `scripts-*` are at the core of your dotfile management. They are shell scripts, but `dotmgr` parses their documentation and ordering to create a TUI interface to select a particular script super easily
 
-- [Guide](#guide)
-	- [Summary](#summary)
-	- [Actions](#actions)
-	- [Hooks](#hooks)
-	- [Profiles](#profiles)
-	- [Extras](#extras)
-	- [Utilities](#utilities)
+For every script, use `util` to put common functions for every script to use
 
-## Actions
-
-Actions are at the core of your dotfile management. They are essentially shell scripts, but `dotmgr` parses their documentation and ordering to create a TUI interface to select a particular script super easily
-
-The initializer you ran in [Getting Started](./getting-started.md) should have set you up with some runnable actions.
-
-There are also "plumbing" and "sudo" variants of actions. Use plumbing if the action is some-what more lower-level, and you still want to be able to select from it Just In Case. Use "sudo" to run an action as sudo. This isn't implemented yet. Later, there will be a simple API to call plumbing scripts from non-plumbing scripts.
-
-## Hooks
-
-Hooks are placed in the `hooks` subdirectory. The supported hooks are:
-
-- `actionPlumbingBefore.sh`
-- `actionPlumbingAfter.sh`
-- `actionBefore.sh`
-- `actionAfter.sh`
-- `doctorBefore.sh`
-- `doctorAfter.sh`
-- `updateBefore.sh`
-- `updateAfter.sh`
-
-The body of the hook must be within the `main()` function. `dotmgr` will source your [utility](##Utilities) files before calling `main()`. Example:
-
-```sh
-# shellcheck shell=bash
-
-main() {
-	printf '%s\n' 'Hook called!'
-}
-```
-
-When calling an action while passing `--sudo`, slightly different files are called for the hooks. For example, `updateAfterSudo.sh` would be called instead of `updateAfter.sh`.
-
-## Profiles
-
-Profiles are used to detect and categorize the currently running system. For example, you might have "server", "desktop", and "laptop" profiles so you can easily deploy different dotfiles.
-
-Profiles are sourced in anti-numerical order. After each source, `main.check` is ran - if it returns a successful exit code, then the normalized name of the file is set to `REPLY` when calling `dotmgr.get_profile()`. "Normalize" means that a prefix of `^.*?-` and suffix of `\.sh$` are removed. So, `1-desktop.sh` becomes `desktop`.
-
-## Extras
-
-Create auxillary files under the `extras` subdirectory. For example, a particular Perl script, or a JSON configuration file may live here. This isn't used by dotmgr directly, but it's a convention.
-
-## Utilities
+### Utilities
 
 Create utility and helper functions under the `util` subdirectory.
 
@@ -111,3 +63,13 @@ Now, your function is callable by any of your hooks, actions, or profiles like s
 ```sh
 dot.install_cmd 'nvim' 'neovim'
 ```
+
+## impl
+
+Write `entrypoint.*` to write an entrypoint for a particular language
+
+Write `environment.sh` to print out an environment to be parsed and used for execution of any script.
+
+## Extras
+
+Create auxillary files under the `extras` subdirectory. For example, a particular Perl script, or a JSON configuration file may live here. This isn't used by dotmgr directly, but it's a convention.

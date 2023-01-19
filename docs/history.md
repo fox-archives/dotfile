@@ -9,3 +9,5 @@ For many many months, this proved to be a fantastic setup, especially since I wa
 But, once again, I wanted to separate the "management" and "configuration" aspect of `dotmgr`. Since `dotmgr` was relatively stable, this would benefit `hyperupcall/dots` by making things more declarative. Additionally, it would make it easier for others to use `dotmgr`, if they wished to experiment with, or use it
 
 Henceforth, [hyperupcall/dotmgr](https://github.com/hyperupcall/dotmgr) was created. I used [git-filter-repo](https://github.com/newren/git-filter-repo) to extract the previous `./bootstrap/dotmgr` directory to its own repository
+
+The project was rewritten in Rust in January, 2022.

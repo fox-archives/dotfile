@@ -2,13 +2,10 @@
 
 use clap::Parser;
 use colored::Colorize;
-use log::info;
 use notify::{PollWatcher, RecommendedWatcher, RecursiveMode, Watcher, WatcherKind};
 use std::{
-	collections::HashMap,
-	io::{BufRead, BufReader},
 	path::{Path, PathBuf},
-	process::{exit, Command, Stdio},
+	process::{exit, Command},
 	time::Duration,
 };
 
@@ -19,7 +16,6 @@ use cli::{Cli, CliCommands, InternalCommands};
 mod tui;
 
 mod util;
-use util::{get_entrypoint_sh, When};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let cli = Cli::parse();
@@ -75,7 +71,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 					}
 
 					let env = util::get_environment(&config)?;
-					let entrypoint = get_entrypoint_sh(config.dotmgr_dir.to_str().unwrap().clone());
+					let entrypoint =
+						util::get_entrypoint_sh(config.dotmgr_dir.to_str().unwrap().clone());
 					let script = util::get_script_exec(category_path, glob.clone());
 					let sources = util::get_sources(config.dotmgr_dir.to_str().unwrap().clone());
 
@@ -108,8 +105,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			exit(1);
 		}
 		CliCommands::Update {} => {
-			util::run_hook(&config, When::Before, "update");
-
 			let dir = config.dotmgr_src_dir.to_str().unwrap();
 			Command::new("git")
 				.args(["-C", dir, "status", "--short"])
@@ -129,8 +124,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 				.unwrap()
 				.wait()
 				.unwrap();
-
-			util::run_hook(&config, When::After, "update");
 		}
 		CliCommands::Internal { command } => match command {
 			InternalCommands::StartWatcher {} => {
