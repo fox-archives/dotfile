@@ -1,11 +1,11 @@
 # dotmgr
 
-A dotfile deployment framework
+A dotfile deployment framework.
 
 ## Contents
 
-New users, see [Getting Started](./getting-started.md)
+New users, see [Getting Started](./getting-started.md).
 
-Once acclimated, see [Guide](./guide.md). This page is also a reference
+Once acclimated, see [Guide](./guide.md). This page is also a reference.
 
-For project history, see [History](./history.md)
+For project history, see [History](./history.md).

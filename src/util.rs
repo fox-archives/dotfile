@@ -1,15 +1,15 @@
 use std::{
 	collections::HashMap,
 	env, fmt,
-	fs::File,
-	io::{BufRead, BufReader},
+	fs::{self, File},
+	io::{self, BufRead, BufReader},
 	path::PathBuf,
 	process::{exit, Command, Stdio},
 };
 
 use glob::glob;
 
-use crate::tui;
+use crate::{cli::ReconcileCommands, tui};
 
 pub struct Config {
 	pub dotfiles_dir: PathBuf,
@@ -154,6 +154,10 @@ pub fn get_environment(
 	let output = child.wait_with_output().expect("failed to wait on child");
 
 	for line in String::from_utf8(output.stdout.clone())?.lines() {
+		if line.starts_with("#") {
+			continue;
+		}
+
 		match line.find("=") {
 			Some(val) => {
 				let key = line[..val].trim().replace('"', "");

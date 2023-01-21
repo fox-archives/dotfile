@@ -1,5 +1,3 @@
-#![feature(exit_status_error)]
-
 use clap::Parser;
 use colored::Colorize;
 use notify::{PollWatcher, RecommendedWatcher, RecursiveMode, Watcher, WatcherKind};
@@ -10,10 +8,12 @@ use std::{
 };
 
 mod cli;
-use crate::cli::ScriptCommands;
-use cli::{Cli, CliCommands, InternalCommands};
+use crate::cli::{Cli, CliCommands, InternalCommands, ReconcileCommands, ScriptCommands};
 
 mod tui;
+
+mod utils;
+use utils::reconcile::{self, get_deploy_sh, get_dotfile_list, reconcile_dotfiles};
 
 mod util;
 
@@ -96,9 +96,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 				}
 			}
 		}
-		CliCommands::Reconcile { .. } => {
-			println!("{}", "Not implemented".italic());
-			exit(1);
+		CliCommands::Reconcile { command } => {
+			let deploy_sh = reconcile::get_deploy_sh(config.dotmgr_dir.to_str().unwrap());
+			let dotfile_list = reconcile::get_dotfile_list(deploy_sh).unwrap();
+
+			match &command {
+				ReconcileCommands::Status {} => {
+					reconcile_dotfiles(dotfile_list, ReconcileCommands::Status {});
+				}
+				ReconcileCommands::Deploy {} => {
+					reconcile_dotfiles(dotfile_list, ReconcileCommands::Deploy {});
+				}
+				ReconcileCommands::Undeploy {} => {
+					reconcile_dotfiles(dotfile_list, ReconcileCommands::Undeploy {});
+				}
+			}
 		}
 		CliCommands::Generate {} => {
 			println!("{}", "Not implemented".italic());

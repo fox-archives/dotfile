@@ -32,7 +32,7 @@ pub enum CliCommands {
 	/// Generate executable files form all scripts
 	Generate {},
 
-	/// Updates dotmgr to the latest release
+	/// Update dotmgr to the latest release
 	Update {},
 
 	/// Run an internal command
@@ -65,10 +65,14 @@ pub enum ScriptCommands {
 
 #[derive(Subcommand)]
 pub enum ReconcileCommands {
-	/// Synchronize dotfiles
-	Sync {},
+	/// View status of dotfiles
+	Status {},
 
-	UnSync {},
+	/// Deploy dotfiles
+	Deploy {},
+
+	// Undeploy dotfiles
+	Undeploy {},
 }
 
 #[derive(Subcommand)]
