@@ -1,8 +1,12 @@
+use core::str;
 use std::{
-	fs,
+	env, fs, os,
 	path::PathBuf,
 	process::{exit, Command},
 };
+
+use colored::Colorize;
+use crossterm::style::Stylize;
 
 use crate::cli::ReconcileCommands;
 
@@ -81,108 +85,216 @@ pub struct Reconcilers {
 	pub null_to_null: Reconciler,
 }
 
-fn print_files(source: PathBuf, target: PathBuf) {
-	println!("  source: {}", source.to_str().unwrap());
-	println!("  target: {}", target.to_str().unwrap());
+fn prettify_path(path: &PathBuf) -> PathBuf {
+	let home = env::var("HOME").unwrap();
+
+	if path.starts_with(&home) {
+		let b: String = String::from(path.to_str().unwrap())
+			.chars()
+			.skip(home.len() + 1)
+			.collect();
+		PathBuf::from(String::from("~/") + b.as_str())
+	} else {
+		PathBuf::from(path)
+	}
 }
 
-fn symlink_resolved_properly(symlink: PathBuf, proper_value: String) {
-	let c = symlink.read_link().unwrap();
+fn symlink_resolved_properly(source: &PathBuf, target: &PathBuf) -> bool {
+	if target.is_symlink() {
+		let expected_value = target.read_link().unwrap();
+		if expected_value == source.clone() {
+			true
+		} else {
+			false
+		}
+	} else {
+		false
+	}
+}
+
+fn print_path(source: &PathBuf, target: &PathBuf) {
+	let p = prettify_path(&target);
+	let s = String::from(p.to_str().unwrap());
+	println!("{}", s.dimmed());
+
+	let mut status = String::from("");
+	if target.exists() {
+		if symlink_resolved_properly(&source, &target) {
+			status = String::from("GOOD");
+		} else {
+			status = String::from("TARGET CREATED, WRONG VALUE");
+		}
+	} else {
+		status = String::from("TARGET NOT CREATED");
+	}
+	println!("  => {}", status.as_str());
+}
+
+pub fn handle_unsymlink(target: &PathBuf) {
+	if target.is_symlink() {
+		fs::remove_file(target).unwrap();
+	} else {
+		println!(
+			"WARNING: Cannot handle path (not symlink): {}",
+			target.to_str().unwrap()
+		);
+	}
 }
 
 pub fn reconcile_dotfiles(dotfiles: Vec<DotfileEntry>, reconciler_command: ReconcileCommands) {
 	let reconcilers = Reconcilers {
 		symlink_to_symlink: Reconciler {
 			status: |source, target| {
-				show_reconcile_failure("ERROR_SYMLINK_SYMLINK");
-				println!("ERR_SYM_SYM");
-				print_files(source, target);
+				print_path(&source, &target);
 			},
 			deploy: |source, target| {},
 			undeploy: |_, target| {
-				fs::remove_file(target).unwrap();
+				handle_unsymlink(&target);
 			},
 		},
 		symlink_to_file: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		symlink_to_dir: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		symlink_to_null: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		file_to_symlink: Reconciler {
-			status: |source, target| {},
+			status: |source, target| {
+				print_path(&source, &target);
+			},
 			deploy: |source, target| {},
 			undeploy: |_, target| {
-				fs::remove_file(target).unwrap();
+				handle_unsymlink(&target);
+			},
+		},
+		symlink_to_dir: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
+		},
+		symlink_to_null: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {
+				fs::create_dir_all(target.parent().unwrap()).unwrap();
+				os::unix::fs::symlink(source, target).unwrap();
+			},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
+		},
+		file_to_symlink: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
 			},
 		},
 		file_to_file: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		file_to_dir: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		file_to_null: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		dir_to_symlink: Reconciler {
-			status: |source, target| {},
+			status: |source, target| {
+				print_path(&source, &target);
+			},
 			deploy: |source, target| {},
 			undeploy: |_, target| {
-				fs::remove_file(target).unwrap();
+				handle_unsymlink(&target);
+			},
+		},
+		file_to_dir: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
+		},
+		file_to_null: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {
+				fs::create_dir_all(target.parent().unwrap()).unwrap();
+				os::unix::fs::symlink(source, target).unwrap();
+			},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
+		},
+		dir_to_symlink: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
 			},
 		},
 		dir_to_file: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		dir_to_dir: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		dir_to_null: Reconciler {
-			status: |source, target| {},
-			deploy: |source, target| {},
-			undeploy: |source, target| {},
-		},
-		null_to_symlink: Reconciler {
-			status: |source, target| {},
+			status: |source, target| {
+				print_path(&source, &target);
+			},
 			deploy: |source, target| {},
 			undeploy: |_, target| {
-				fs::remove_file(target).unwrap();
+				handle_unsymlink(&target);
+			},
+		},
+		dir_to_dir: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
+		},
+		dir_to_null: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {
+				fs::create_dir_all(target.parent().unwrap()).unwrap();
+				os::unix::fs::symlink(source, target).unwrap();
+			},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
+		},
+		null_to_symlink: Reconciler {
+			status: |source, target| {
+				print_path(&source, &target);
+			},
+			deploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
 			},
 		},
 		null_to_file: Reconciler {
-			status: |source, target| {},
+			status: |source, target| {
+				print_path(&source, &target);
+			},
 			deploy: |source, target| {},
-			undeploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
 		},
 		null_to_dir: Reconciler {
-			status: |source, target| {},
+			status: |source, target| {
+				print_path(&source, &target);
+			},
 			deploy: |source, target| {},
-			undeploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
 		},
 		null_to_null: Reconciler {
-			status: |source, target| {},
+			status: |source, target| {
+				print_path(&source, &target);
+			},
 			deploy: |source, target| {},
-			undeploy: |source, target| {},
+			undeploy: |_, target| {
+				handle_unsymlink(&target);
+			},
 		},
 	};
 
