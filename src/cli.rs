@@ -32,9 +32,6 @@ pub enum CliCommands {
 	/// Generate executable files form all scripts
 	Generate {},
 
-	/// Update dotmgr to the latest release
-	Update {},
-
 	/// Run an internal command
 	Internal {
 		#[command(subcommand)]

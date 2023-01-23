@@ -13,13 +13,15 @@ use crate::cli::{Cli, CliCommands, InternalCommands, ReconcileCommands, ScriptCo
 mod tui;
 
 mod utils;
-use utils::reconcile::{self, get_deploy_sh, get_dotfile_list, reconcile_dotfiles};
+use utils::reconcile::{self, reconcile_dotfiles};
 
 mod util;
+use util::Config;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let cli = Cli::parse();
-	let config = util::get_config();
+	let config = Config::default();
+
 	env_logger::Builder::new()
 		.filter_level(cli.verbose.log_level_filter())
 		.init();
@@ -97,8 +99,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			}
 		}
 		CliCommands::Reconcile { command } => {
-			let deploy_sh = reconcile::get_deploy_sh(config.dotmgr_dir.to_str().unwrap());
-			let dotfile_list = reconcile::get_dotfile_list(deploy_sh).unwrap();
+			let dotfile_list = reconcile::get_dotfile_list(&config).unwrap();
 
 			match &command {
 				ReconcileCommands::Status {} => {
@@ -115,27 +116,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 		CliCommands::Generate {} => {
 			println!("{}", "Not implemented".italic());
 			exit(1);
-		}
-		CliCommands::Update {} => {
-			let dir = config.dotmgr_src_dir.to_str().unwrap();
-			Command::new("git")
-				.args(["-C", dir, "status", "--short"])
-				.spawn()
-				.unwrap()
-				.wait()
-				.unwrap();
-			Command::new("git")
-				.args(["-C", dir, "pull"])
-				.spawn()
-				.unwrap()
-				.wait()
-				.unwrap();
-			Command::new("git")
-				.args(["-C", dir, "status", "--short"])
-				.spawn()
-				.unwrap()
-				.wait()
-				.unwrap();
 		}
 		CliCommands::Internal { command } => match command {
 			InternalCommands::StartWatcher {} => {

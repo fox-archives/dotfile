@@ -9,6 +9,7 @@ use colored::Colorize;
 use crossterm::style::Stylize;
 
 use crate::cli::ReconcileCommands;
+use crate::util::{self, Config};
 
 pub enum DotfileEntryOp {
 	Symlink,
@@ -22,16 +23,21 @@ pub struct DotfileEntry {
 	pub target: PathBuf,
 }
 
-pub fn get_deploy_sh(dotmgr_dir: &str) -> PathBuf {
-	return PathBuf::from(dotmgr_dir).join("impl/deploy.sh");
-}
+pub fn get_dotfile_list(config: &Config) -> Result<Vec<DotfileEntry>, std::io::Error> {
+	let deploy_sh = match env::consts::OS {
+		"windows" => PathBuf::from(&config.dotmgr_dir).join("impl/deploy.ps1"),
+		_ => PathBuf::from(&config.dotmgr_dir).join("impl/deploy.sh"),
+	};
 
-pub fn get_dotfile_list(deploy_sh: PathBuf) -> Result<Vec<DotfileEntry>, std::io::Error> {
 	let mut dotfiles = vec![];
 
-	let output = Command::new(deploy_sh).output()?;
+	let output = match env::consts::OS {
+		"windows" => Command::new("pwsh.exe").arg(deploy_sh).output()?,
+		_ => Command::new(deploy_sh).output()?
+	};
+
 	if !output.status.success() {
-		eprintln!("Failed to execute deploy.sh");
+		eprintln!("Failed to execute deploy script");
 		eprintln!("{}", String::from_utf8_lossy(&output.stderr));
 		exit(1);
 	}
@@ -41,7 +47,7 @@ pub fn get_dotfile_list(deploy_sh: PathBuf) -> Result<Vec<DotfileEntry>, std::io
 			continue;
 		}
 
-		let parts: Vec<&str> = line.split(":").collect();
+		let parts: Vec<&str> = line.split("|").collect();
 
 		if parts.len() != 3 {
 			eprintln!("warning: line does not have two semicolons: {}", line);
@@ -86,7 +92,8 @@ pub struct Reconcilers {
 }
 
 fn prettify_path(path: &PathBuf) -> PathBuf {
-	let home = env::var("HOME").unwrap();
+	let home = dirs::home_dir().unwrap();
+	let home = home.to_str().unwrap();
 
 	if path.starts_with(&home) {
 		let b: String = String::from(path.to_str().unwrap())
@@ -113,11 +120,14 @@ fn symlink_resolved_properly(source: &PathBuf, target: &PathBuf) -> bool {
 }
 
 fn print_path(source: &PathBuf, target: &PathBuf) {
-	let p = prettify_path(&target);
-	let s = String::from(p.to_str().unwrap());
-	println!("{}", s.dimmed());
+	// let p = prettify_path(&target);
+	// let s = String::from(p.to_str().unwrap());
+	// let s2 =  String::from(target.to_str().unwrap());
+	let target_str = String::from(target.to_str().unwrap());
+	println!("{}", target_str.dimmed());
+	// println!("{} :: {}", s2, target.exists());
 
-	let mut status = String::from("");
+	let status: String;
 	if target.exists() {
 		if symlink_resolved_properly(&source, &target) {
 			status = String::from("GOOD");
@@ -176,7 +186,7 @@ pub fn reconcile_dotfiles(dotfiles: Vec<DotfileEntry>, reconciler_command: Recon
 			},
 			deploy: |source, target| {
 				fs::create_dir_all(target.parent().unwrap()).unwrap();
-				os::unix::fs::symlink(source, target).unwrap();
+				util::symlink(source, target);
 			},
 			undeploy: |_, target| {
 				handle_unsymlink(&target);
@@ -215,7 +225,7 @@ pub fn reconcile_dotfiles(dotfiles: Vec<DotfileEntry>, reconciler_command: Recon
 			},
 			deploy: |source, target| {
 				fs::create_dir_all(target.parent().unwrap()).unwrap();
-				os::unix::fs::symlink(source, target).unwrap();
+				util::symlink(source, target);
 			},
 			undeploy: |_, target| {
 				handle_unsymlink(&target);
@@ -254,7 +264,7 @@ pub fn reconcile_dotfiles(dotfiles: Vec<DotfileEntry>, reconciler_command: Recon
 			},
 			deploy: |source, target| {
 				fs::create_dir_all(target.parent().unwrap()).unwrap();
-				os::unix::fs::symlink(source, target).unwrap();
+				util::symlink(source, target);
 			},
 			undeploy: |_, target| {
 				handle_unsymlink(&target);

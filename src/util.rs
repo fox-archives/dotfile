@@ -1,19 +1,22 @@
+use colored::Colorize;
 use std::{
 	collections::HashMap,
 	env, fmt,
-	fs::{self, File},
-	io::{self, BufRead, BufReader},
+	fs::File,
+	io::{BufRead, BufReader},
+	os,
 	path::PathBuf,
 	process::{exit, Command, Stdio},
 };
 
+use dirs;
 use glob::glob;
 
-use crate::{cli::ReconcileCommands, tui};
+use crate::tui;
 
 pub struct Config {
 	pub dotfiles_dir: PathBuf,
-	pub dotmgr_src_dir: PathBuf,
+	pub os_dir: PathBuf,
 	pub dotmgr_dir: PathBuf,
 }
 
@@ -25,16 +28,21 @@ impl Default for Config {
 				if p.is_absolute() {
 					p
 				} else {
-					PathBuf::from(env::var("HOME").unwrap()).join(".dotfiles")
+					PathBuf::from(dirs::home_dir().unwrap()).join(".dotfiles")
 				}
 			}
-			Err(_err) => PathBuf::from(env::var("HOME").unwrap()).join(".dotfiles"),
+			Err(..) => PathBuf::from(dirs::home_dir().unwrap()).join(".dotfiles"),
+		};
+
+		let os_dir = match env::consts::OS {
+			"windows" => dotfiles_dir.clone().join("os/windows"),
+			_ => dotfiles_dir.clone().join("os/unix"),
 		};
 
 		Config {
-			dotfiles_dir: dotfiles_dir.clone(),
-			dotmgr_src_dir: dotfiles_dir.clone().join(".dotmgr"),
-			dotmgr_dir: dotfiles_dir.join("dotmgr"),
+			dotfiles_dir,
+			os_dir: os_dir.clone(),
+			dotmgr_dir: os_dir.join("dotmgr"),
 		}
 	}
 }
@@ -43,53 +51,12 @@ impl fmt::Display for Config {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(
 			f,
-			"dotfiles_dir: {}\ndotmgr_src_dir: {}\ndotmgr_dir: {}",
+			"dotfiles_dir: {}\nos_dir: {},\ndotmgr_dir: {}\n",
 			self.dotfiles_dir.to_str().unwrap(),
-			self.dotmgr_src_dir.to_str().unwrap(),
+			self.os_dir.to_str().unwrap(),
 			self.dotmgr_dir.to_str().unwrap()
 		)
 	}
-}
-
-pub fn get_config() -> Config {
-	let mut config = Config::default();
-
-	let config_file = File::open(config.dotfiles_dir.join("dotmgr.conf"));
-	if config_file.is_err() {
-		return config;
-	}
-
-	let reader = BufReader::new(config_file.unwrap());
-	for line in reader.lines() {
-		let l = line.unwrap().to_string();
-		match l.find("=") {
-			Some(val) => {
-				let key = l.get(..val).unwrap().trim();
-				let value = l.get(val + 1..).unwrap().trim();
-
-				if key == "dotmgr_src_dir" {
-					if value.starts_with("~/") {
-						let v: String = value.chars().skip(2).collect();
-						config.dotmgr_src_dir = PathBuf::from(env::var("HOME").unwrap()).join(v);
-					} else {
-						config.dotmgr_src_dir = PathBuf::from(value);
-					}
-				} else if key == "dotmgr_dir" {
-					if value.starts_with("~/") {
-						let v: String = value.chars().skip(2).collect();
-						config.dotmgr_dir = PathBuf::from(env::var("HOME").unwrap()).join(v);
-					} else {
-						config.dotmgr_dir = PathBuf::from(value);
-					}
-				}
-			}
-			None => {
-				println!("no match");
-			}
-		}
-	}
-
-	return config;
 }
 
 pub fn get_script_exec(dir: PathBuf, glob_pattern: Option<String>) -> PathBuf {
@@ -219,4 +186,23 @@ pub fn does_command_exist(command_name: &str, help_flag: &str) -> bool {
 	} else {
 		false
 	}
+}
+
+#[cfg(target_os = "windows")]
+pub fn symlink(original: PathBuf, target: PathBuf) {
+	if original.is_dir() {
+		os::windows::fs::symlink_dir(original, target).unwrap();
+	} else if original.is_file() {
+		os::windows::fs::symlink_file(original, target).unwrap();
+	}
+}
+
+#[cfg(not(target_os = "windows"))]
+pub fn symlink(original: PathBuf, target: PathBuf) {
+	os::unix::fs::symlink(original, target).unwrap();
+}
+
+pub fn die(message: &str) {
+	eprintln!("{} {}", "Error:".red(), message);
+	exit(1);
 }
