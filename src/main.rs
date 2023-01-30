@@ -10,13 +10,12 @@ use std::{
 mod cli;
 use crate::cli::{Cli, CliCommands, InternalCommands, ReconcileCommands, ScriptCommands};
 
+mod config;
+use crate::config::Config;
+
 mod tui;
 
-mod utils;
-use utils::reconcile::{self, reconcile_dotfiles};
-
 mod util;
-use util::Config;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let cli = Cli::parse();
@@ -99,17 +98,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 			}
 		}
 		CliCommands::Reconcile { command } => {
-			let dotfile_list = reconcile::get_dotfile_list(&config).unwrap();
+			let dotfile_list = util::get_dotfile_list(&config).unwrap();
 
 			match &command {
 				ReconcileCommands::Status {} => {
-					reconcile_dotfiles(dotfile_list, ReconcileCommands::Status {});
+					util::reconcile_dotfiles(dotfile_list, ReconcileCommands::Status {});
 				}
 				ReconcileCommands::Deploy {} => {
-					reconcile_dotfiles(dotfile_list, ReconcileCommands::Deploy {});
+					util::reconcile_dotfiles(dotfile_list, ReconcileCommands::Deploy {});
 				}
 				ReconcileCommands::Undeploy {} => {
-					reconcile_dotfiles(dotfile_list, ReconcileCommands::Undeploy {});
+					util::reconcile_dotfiles(dotfile_list, ReconcileCommands::Undeploy {});
 				}
 			}
 		}
@@ -145,7 +144,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 					println!("{:?}", e);
 				}
 			}
-			InternalCommands::FindMan { command_line } => {}
+			InternalCommands::FindMan { command_line } => {
+				let str = util::find_man(command_line.clone());
+				println!("{}", str.as_str());
+			}
 		},
 	}
 
