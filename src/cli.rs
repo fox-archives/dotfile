@@ -29,9 +29,6 @@ pub enum CliCommands {
 		command: ReconcileCommands,
 	},
 
-	/// Generate executable files form all scripts
-	Generate {},
-
 	/// Run an internal command
 	Internal {
 		#[command(subcommand)]
@@ -77,4 +74,6 @@ pub enum InternalCommands {
 	StartWatcher {},
 
 	FindMan { command_line: String },
+
+	Generate {},
 }
