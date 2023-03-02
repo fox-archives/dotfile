@@ -1,3 +1,4 @@
+use core::error::Source;
 use std::{
 	collections::HashMap,
 	env, fs, os,
@@ -215,9 +216,47 @@ pub fn reconcile_dotfiles(dotfiles: &Vec<DotfileEntry>, reconciler_command: Reco
 			} else if dotfile.target.is_file() {
 			} else if dotfile.target.is_dir() {
 			} else if !dotfile.target.exists() {
+				run(
+					&reconciler_command,
+					&dotfile,
+					Reconciler {
+						status: |_, target| {
+							print_title(&target);
+							print_fixable(true);
+						},
+						deploy: |source, target| {
+							parent_mkdirp(target.clone());
+							symlink(source, target);
+						},
+						undeploy: |_, target| {
+							unsymlink(&target);
+						},
+					},
+				)
 			}
 		} else if dotfile.source.is_dir() {
 			if dotfile.target.is_symlink() {
+				run(
+					&reconciler_command,
+					&dotfile,
+					Reconciler {
+						status: |_source, target| {
+							print_title(&target);
+							print_fixable(true);
+						},
+						deploy: |source, target| {
+							parent_mkdirp(target.clone());
+							fs::remove_file(target).unwrap();
+							symlink(source, target);
+						},
+						undeploy: |_, target| {
+							unsymlink(&target);
+						},
+					},
+				);
+			} else if dotfile.target.is_file() {
+			} else if dotfile.target.is_dir() {
+			} else if !dotfile.target.exists() {
 				run(
 					&reconciler_command,
 					&dotfile,
@@ -234,14 +273,6 @@ pub fn reconcile_dotfiles(dotfiles: &Vec<DotfileEntry>, reconciler_command: Reco
 							unsymlink(&target);
 						},
 					},
-				);
-			} else if dotfile.target.is_file() {
-			} else if dotfile.target.is_dir() {
-			} else if !dotfile.target.exists() {
-			} else {
-				eprintln!(
-					"Does not know how to handle file: {}",
-					dotfile.target.to_str().unwrap()
 				);
 			}
 		} else if !dotfile.source.exists() {
