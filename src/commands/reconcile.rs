@@ -1,4 +1,3 @@
-use core::error::Source;
 use std::{
 	collections::HashMap,
 	env, fs, os,
@@ -131,12 +130,7 @@ fn symlink(original: PathBuf, target: PathBuf) {
 
 #[cfg(not(target_os = "windows"))]
 fn symlink(original: PathBuf, target: PathBuf) {
-	if target.is_symlink() {
-		fs::remove_file(&target).unwrap();
-		os::unix::fs::symlink(original, target).unwrap();
-	} else {
-		panic!("Bad symlink");
-	}
+	os::unix::fs::symlink(original, target).unwrap();
 }
 
 fn unsymlink(target: &PathBuf) {
@@ -206,6 +200,7 @@ pub fn reconcile_dotfiles(dotfiles: &Vec<DotfileEntry>, reconciler_command: Reco
 						},
 						deploy: |source, target| {
 							parent_mkdirp(target.clone());
+							fs::remove_file(target.clone()).unwrap();
 							symlink(source, target);
 						},
 						undeploy: |_, target| {
@@ -246,7 +241,7 @@ pub fn reconcile_dotfiles(dotfiles: &Vec<DotfileEntry>, reconciler_command: Reco
 						},
 						deploy: |source, target| {
 							parent_mkdirp(target.clone());
-							fs::remove_file(target).unwrap();
+							fs::remove_file(&target).unwrap();
 							symlink(source, target);
 						},
 						undeploy: |_, target| {
