@@ -3,7 +3,7 @@ name = "fox-dotfile"
 description = "Dotfile manager"
 license = "MPL-2.0"
 repository = "https://github.com/fox-tools/dotfile"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [[bin]]
