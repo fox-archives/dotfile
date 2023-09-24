@@ -1,10 +1,14 @@
 [package]
-name = "dotmgr"
+name = "fox-dotfile"
 description = "Dotfile manager"
 license = "MPL-2.0"
-repository = "https://github.com/hyperupcall/dotmgr"
+repository = "https://github.com/fox-tools/dotfile"
 version = "0.1.0"
 edition = "2021"
+
+[[bin]]
+path = "src/main.rs"
+name = "dotfile"
 
 [dependencies]
 clap = { version = "4.0.32", features = ["derive"] }

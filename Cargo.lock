@@ -231,22 +231,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dotmgr"
-version = "0.1.0"
-dependencies = [
- "clap",
- "clap-verbosity-flag",
- "colored",
- "crossterm",
- "dirs",
- "env_logger",
- "glob",
- "log",
- "notify",
- "tui",
-]
-
-[[package]]
 name = "env_logger"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -290,6 +274,22 @@ dependencies = [
  "libc",
  "redox_syscall 0.3.5",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "fox-dotfile"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "clap-verbosity-flag",
+ "colored",
+ "crossterm",
+ "dirs",
+ "env_logger",
+ "glob",
+ "log",
+ "notify",
+ "tui",
 ]
 
 [[package]]
